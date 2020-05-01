@@ -1,16 +1,11 @@
 package com.modelo;
 
-import javax.validation.constraints.NotEmpty;
 
 public class Pista {
 	private int id;
-	@NotEmpty(message="El campo no puede estar vacío")
 	private String nombre;
-	@NotEmpty(message="El campo no puede estar vacío")
 	private String localizacion;
-	@NotEmpty(message="El campo no puede estar vacío")
 	private String imagen;
-	@NotEmpty(message="El campo no puede estar vacío")
 	private String info;
 	
 	public Pista() {

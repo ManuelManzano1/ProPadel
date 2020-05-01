@@ -249,6 +249,24 @@ public class Dao {
 		}
 		);
 	}
+	public List<Pista> obtenerPistas(String nombre) {
+		return template.query("select * from pista where nombre='"+nombre+"'", new RowMapper<Pista>() {
+			@Override
+			public Pista mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Pista p = new Pista();
+				p.setId(rs.getInt(1));
+				p.setNombre(rs.getString(2));
+				p.setLocalizacion(rs.getString(3));
+				p.setImagen(rs.getString(4));
+				p.setInfo(rs.getString(5));
+				return p;
+			}
+			
+			
+		}
+		);
+	}
 		
 	}
 

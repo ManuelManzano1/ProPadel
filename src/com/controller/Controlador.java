@@ -272,16 +272,24 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/aniadirPista",method = RequestMethod.POST)
 	public ModelAndView aniadirPista(@ModelAttribute("pista")Pista p) {
-		if(dao.obtenerPista(p.getNombre())==null) {
-			dao.aniadirPista(p);
-			dao.aniadirImagen(p);
-			return new ModelAndView("redirect:/cargarInicio");
-		}
-		else {
+		if(p.getNombre()=="") {
 			ModelAndView modelo = new ModelAndView("aniadirPista");
-			modelo.addObject("repetido", 1);
 			modelo.addObject("command", new Pista());
 			return modelo;
+		}
+		else {
+			List<Pista> pistas = dao.obtenerPistas(p.getNombre());
+			if(pistas.size()<1) {
+				dao.aniadirPista(p);
+				dao.aniadirImagen(p);
+				return new ModelAndView("redirect:/cargarInicio");
+			}
+			else {
+				ModelAndView modelo = new ModelAndView("aniadirPista");
+				modelo.addObject("repetido", 1);
+				modelo.addObject("command", new Pista());
+				return modelo;
+			}
 		}
 		
 	}
