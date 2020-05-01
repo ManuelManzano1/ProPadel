@@ -230,7 +230,8 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/guardarCambiosPista",method = RequestMethod.POST)
 	public ModelAndView guardarCambiosPista(@ModelAttribute("pista")Pista p) {
-		if(dao.obtenerPista(p.getNombre())==null) {
+		List<Pista> pistas  = dao.obtenerPistas(p.getNombre());
+		if(pistas.size()<1) {
 			dao.modificarPista(p);
 			return new ModelAndView("redirect:/cargarInicio");
 		}
