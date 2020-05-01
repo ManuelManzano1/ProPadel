@@ -121,15 +121,22 @@
 										<c:forEach items="${pistas}" var="p">
 										<div class="col-md-4">
 										<div class="product">
-											<div class="product-img">
-												<img src="${p.imagen}" width="100%" height="202px">
-											</div>
-											<div class="product-body">
-												<p class="product-category">${p.localizacion}</p>
-												<h3 class="product-name">${p.nombre}</h3>
-												<h6><a href="editarPista?pista=${p.nombre}">Editar datos de la pista <i class="fas fa-edit"></i></a></h6>
-												<h6><a href="accederAniadirImagenesPista?pista=${p.nombre}">Añadir imagenes <i class="fas fa-images"></i></a></h6>
-											</div>
+											<c:if test="${eliminar>0}">
+												<div class="eliminarPista">
+												<br>
+													<a href="#"><b>Eliminar Pista</b> <i class="fas fa-trash"></i></a>
+													<br>
+												</div>
+											</c:if>
+												<div class="product-img">
+													<img src="${p.imagen}" width="100%" height="202px">
+												</div>
+												<div class="product-body">
+													<p class="product-category">${p.localizacion}</p>
+													<h3 class="product-name">${p.nombre}</h3>
+													<h6><a href="editarPista?pista=${p.nombre}">Editar datos de la pista <i class="fas fa-edit"></i></a></h6>
+													<h6><a href="accederAniadirImagenesPista?pista=${p.nombre}">Añadir imagenes <i class="fas fa-images"></i></a></h6>
+												</div>
 										</div>
 										</div>
 										</c:forEach>

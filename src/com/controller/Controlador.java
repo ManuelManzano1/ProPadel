@@ -197,7 +197,7 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/logout",method = RequestMethod.GET)
 	public ModelAndView logout(Model modelo) {
-		sesionP.setAttribute("usuario", null);;
+		sesionP.setAttribute("usuario", null);
 		return new ModelAndView("login");
 		
 	}
@@ -349,5 +349,12 @@ public class Controlador {
 		return "redirect:/cargarInicio";
 		
 	}
-
+	@RequestMapping(value ="/habilitarEliminarPista",method = RequestMethod.GET)
+	public ModelAndView accederEliminarPista() {
+		List<Pista> pistas = dao.obtenerPistas();
+		ModelAndView modelo = new ModelAndView("inicioAdmin");
+		modelo.addObject("eliminar", 1);
+		modelo.addObject("pistas", pistas);
+		return modelo;
+	}
 }

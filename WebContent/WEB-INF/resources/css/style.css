@@ -623,7 +623,20 @@ textarea.input {
 /*=========================================================
 	03 -> Navigation
 ===========================================================*/
-
+.eliminarPista{
+	background-color: #0dc133;
+	margin-bottom: 5px;
+	text-align: center;
+	height: 60px;
+}
+.eliminarPista>a{
+	height: 20px;
+	
+}
+.eliminarPista:hover{
+	background-color: #ff0000;
+	
+}
 #navigation {
   background: #FFF;
   border-bottom: 2px solid #E4E7ED;
