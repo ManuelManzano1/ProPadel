@@ -130,6 +130,11 @@
 					<!-- Product details -->
 					<div class="col-md-5">
 						<form:form method="post" action="guardarCambiosPista">
+						<c:if test="${repetido>0}">
+							<div class="wrap-input100">
+								<h3>Error el nombre de la pista ya está registrado</h3>
+							</div>
+						</c:if>
 							<div class="form-group">
 								<label for = "id">Id: </label>
 								<form:input path="id" class="form-control" readonly="true"/>

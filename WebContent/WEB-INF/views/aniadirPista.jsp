@@ -106,23 +106,40 @@
 					<div class="col-md-6 col-md-offset-3">
 						<form:form method="post" action="aniadirPista">
 							<div class="form-group">
+							<c:if test="${repetido>0}">
+								<div class="wrap-input100">
+									<h3>Error el nombre de la pista ya está registrado</h3>
+								</div>
+							</c:if>
 								<label for = "nombre">Nombre: </label>
 								<form:input path="nombre" class="form-control"/>
+							</div>
+							<div class="form-group">
+								<form:errors path="nombre" cssClass="error"/>
 							</div>
 							<div class="form-group">
 								<label for ="localizacion">Localizacion:</label>
 								<form:input path="localizacion" class="form-control" />
 							</div>
 							<div class="form-group">
+								<form:errors path="localizacion" cssClass="error"/>
+							</div>
+							<div class="form-group">
 								<label for ="imagen">Imagen:</label>
 								<form:input path="imagen" class="form-control" />
+							</div>
+							<div class="form-group">
+								<form:errors path="imagen" cssClass="error"/>
 							</div>
 							<div class="form-group">
 								<label for ="info">Info:</label>
 								<form:textarea path="info" class="form-control" />
 							</div>
 							<div class="form-group">
-								<input type="submit" value="Añadir Imagen" class="btn btn-success"/>
+								<form:errors path="info" cssClass="error"/>
+							</div>
+							<div class="form-group">
+								<input type="submit" value="Añadir Pista" class="btn btn-success"/>
 							</div>
 				</form:form>
 					</div>

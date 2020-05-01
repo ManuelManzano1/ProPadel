@@ -92,13 +92,11 @@ public class Controlador {
 	
 	}
 	@RequestMapping(value ="/cargarInicio",method = RequestMethod.GET)
-	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u,HttpSession sesion) {
-		
+	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u) {
 			List<Pista> pistas = dao.obtenerPistas();
 			if(sesionP.getAttribute("tipo").toString().equalsIgnoreCase("A")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
 				modelo.addObject("pistas", pistas);
-				sesionP=sesion;
 				return modelo;
 			}
 			else {
@@ -109,8 +107,6 @@ public class Controlador {
 				modelo.addObject("numFavoritas", favoritas.size());
 				modelo.addObject("numReservas", reservas.size());
 				modelo.addObject("pistas", pistas);
-				sesionP=sesion;
-				
 				return modelo;
 			}
 	
@@ -202,8 +198,7 @@ public class Controlador {
 		
 	}
 	@RequestMapping(value ="/pista",method = RequestMethod.GET)
-	public ModelAndView cargarPista(@RequestParam("pista")String nombrePista,HttpSession sesion) {
-		sesion = sesionP;
+	public ModelAndView cargarPista(@RequestParam("pista")String nombrePista) {
 		Pista pista = dao.obtenerPista(nombrePista);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("pista");
@@ -224,8 +219,7 @@ public class Controlador {
 		
 	}
 	@RequestMapping(value ="/editarPista",method = RequestMethod.GET)
-	public ModelAndView accesoEditarPista(@RequestParam("pista")String nombrePista,HttpSession sesion) {
-		sesion = sesionP;
+	public ModelAndView accesoEditarPista(@RequestParam("pista")String nombrePista) {
 		Pista pista = dao.obtenerPista(nombrePista);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("editarPista");
@@ -235,14 +229,22 @@ public class Controlador {
 		
 	}
 	@RequestMapping(value ="/guardarCambiosPista",method = RequestMethod.POST)
-	public String guardarCambiosPista(@ModelAttribute("pista")Pista p,HttpSession sesion) {
-		dao.modificarPista(p);
-		return "redirect:/cargarInicio";
-		
+	public ModelAndView guardarCambiosPista(@ModelAttribute("pista")Pista p) {
+		if(dao.obtenerPista(p.getNombre())==null) {
+			dao.modificarPista(p);
+			return new ModelAndView("redirect:/cargarInicio");
+		}
+		else {
+			List<Imagen> imagenes = dao.obtenerImagenesPista(p.getId());
+			ModelAndView modelo = new ModelAndView("editarPista");
+			modelo.addObject("repetido", 1);
+			modelo.addObject("command", p);
+			modelo.addObject("imagenes", imagenes);
+			return modelo;
+		}
 	}
 	@RequestMapping(value ="/accederAniadirImagenesPista",method = RequestMethod.GET)
-	public ModelAndView accesoEditarImagenesPista(@RequestParam("pista")String nombrePista,HttpSession sesion) {
-		sesion = sesionP;
+	public ModelAndView accesoEditarImagenesPista(@RequestParam("pista")String nombrePista) {
 		Pista pista = dao.obtenerPista(nombrePista);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("aniadirImagen");
@@ -269,10 +271,18 @@ public class Controlador {
 		
 	}
 	@RequestMapping(value ="/aniadirPista",method = RequestMethod.POST)
-	public String aniadirPista(@ModelAttribute("pista")Pista p) {
-		dao.aniadirPista(p);
-		dao.aniadirImagen(p);
-		return "redirect:/cargarInicio";
+	public ModelAndView aniadirPista(@ModelAttribute("pista")Pista p) {
+		if(dao.obtenerPista(p.getNombre())==null) {
+			dao.aniadirPista(p);
+			dao.aniadirImagen(p);
+			return new ModelAndView("redirect:/cargarInicio");
+		}
+		else {
+			ModelAndView modelo = new ModelAndView("aniadirPista");
+			modelo.addObject("repetido", 1);
+			modelo.addObject("command", new Pista());
+			return modelo;
+		}
 		
 	}
 	@RequestMapping(value ="/aniadirFav",method = RequestMethod.GET)
@@ -356,5 +366,24 @@ public class Controlador {
 		modelo.addObject("eliminar", 1);
 		modelo.addObject("pistas", pistas);
 		return modelo;
+	}
+	@RequestMapping(value ="/eliminarPista",method = RequestMethod.GET)
+	public ModelAndView eliminarPista(@RequestParam("pista")String nombrePista) {
+		Pista p = dao.obtenerPista(nombrePista);
+		List<Reserva> listaReservas = dao.comprobarReservasPista(p);
+		if(listaReservas.size()>0) {
+			List<Pista> pistas = dao.obtenerPistas();
+			ModelAndView modelo = new ModelAndView("inicioAdmin");
+			modelo.addObject("pistas", pistas);
+			modelo.addObject("reservas", 1);
+			return modelo;
+		}
+		else {
+			dao.eliminarPista(p);
+			dao.eliminarImagenesPista(p);
+			return new ModelAndView("redirect:/cargarInicio");
+		}
+		
+		
 	}
 }

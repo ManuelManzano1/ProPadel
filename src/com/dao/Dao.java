@@ -222,6 +222,33 @@ public class Dao {
 		return template.update("update user set clave=? where usuario=?",u.getClave(),u.getUsuario());
 		
 	}
+
+	public int eliminarPista(Pista p) {
+		return template.update("delete from pista where Id="+p.getId());
+		
+	}
+
+	public int eliminarImagenesPista(Pista p) {
+		return template.update("delete from imagenes where IdP="+p.getId());
+		
+	}
+
+	public List<Reserva> comprobarReservasPista(Pista p) {
+		return template.query("select * from reserva where idPista="+p.getId(),new RowMapper<Reserva>() {
+			@Override
+			public Reserva mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Reserva r = new Reserva();
+				r.setUsuario(rs.getString(1));
+				r.setIdPista(rs.getInt(2));
+				r.setFecha(new Date(rs.getDate(3).getTime()));
+				return r;
+			}
+			
+			
+		}
+		);
+	}
 		
 	}
 

@@ -108,6 +108,17 @@
 			<!-- /MAIN HEADER -->
 		</header>
 		<!-- /HEADER -->
+		<c:if test="${reservas>0}">
+		<div class="section">
+			<div class="container">
+				<div class="row">
+					<div class="wrap-input100">
+						<h3>La pista no se puede eliminar porque tiene reservas pendientes</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+		</c:if>
 		<div class="section">
 			<div class="container">
 				<div class="row">
@@ -123,8 +134,8 @@
 										<div class="product">
 											<c:if test="${eliminar>0}">
 												<div class="eliminarPista">
-												<br>
-													<a href="#"><b>Eliminar Pista</b> <i class="fas fa-trash"></i></a>
+													<br>
+													<a href="eliminarPista?pista=${p.nombre}"><b>Eliminar Pista</b> <i class="fas fa-trash"></i></a>
 													<br>
 												</div>
 											</c:if>
