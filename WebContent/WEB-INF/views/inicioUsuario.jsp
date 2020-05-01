@@ -51,7 +51,7 @@
 						<li><a href=""><i class="fas fa-envelope-open-text"></i> apppropadel@gmail.com</a></li>
 					</ul>
 					<ul class="header-links pull-right">
-						<li><a href="#"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
+						<li><a href="perfil?usuario=${sessionScope.usuario}"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
 						<li><a href="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesion</a></li>
 					</ul>
 				</div>

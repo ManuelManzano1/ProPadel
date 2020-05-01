@@ -256,7 +256,7 @@ public class Controlador {
 		
 	}
 	@RequestMapping(value ="/aniadirImagen",method = RequestMethod.POST)
-	public String aniadirImagen(@ModelAttribute("imagen")Imagen i,HttpSession sesion) {
+	public String aniadirImagen(@ModelAttribute("imagen")Imagen i) {
 		dao.aniadirImagen(i);
 		return "redirect:/cargarInicio";
 		
@@ -317,6 +317,36 @@ public class Controlador {
 			modelo.addObject("favorito", 1);
 		}
 		return modelo;
+		
+	}
+	@RequestMapping(value ="/perfil",method = RequestMethod.GET)
+	public ModelAndView accederPerfil(@RequestParam("usuario")String usuario) {
+		Usuario u = dao.obtenerUsuario(usuario);
+		ModelAndView modelo = new ModelAndView("perfil");
+		if(usuario.equalsIgnoreCase("admin")) {
+			modelo.addObject("command", u);
+			modelo.addObject("usuario", 1);
+		}
+		else {
+			List<Favorita> favoritas = dao.obtenerFavoritas(usuario);
+			List<Reserva> reservas = dao.obtenerReservas(usuario);
+			modelo.addObject("command", u);
+			modelo.addObject("numFavoritas", favoritas.size());
+			modelo.addObject("numReservas", reservas.size());
+			modelo.addObject("usuario", 0);
+		}
+		return modelo;
+		
+	}
+	@RequestMapping(value ="/modificarPerfil",method = RequestMethod.POST)
+	public String modificarPerfil(@ModelAttribute("usuario")Usuario u) {
+		if(u.getUsuario().equalsIgnoreCase("admin")) {
+			dao.modificarAdmin(u);
+		}
+		else {
+			dao.modificarUsuario(u);
+		}
+		return "redirect:/cargarInicio";
 		
 	}
 

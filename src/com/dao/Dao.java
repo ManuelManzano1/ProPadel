@@ -209,6 +209,19 @@ public class Dao {
 		return template.update("insert into imagenes (idP,imagen) values(?,?)",p.getId(),p.getImagen());
 		
 	}
+
+	public Usuario obtenerUsuario(String usuario) {
+		return template.queryForObject("select * from user where usuario=?",new Object[] {usuario},new BeanPropertyRowMapper<Usuario>(Usuario.class));
+	}
+
+	public int modificarUsuario(Usuario u) {
+		return template.update("update user set clave=?,nombre=?,apellidos=? where usuario=?",u.getClave(),u.getNombre(),u.getApellidos(),u.getUsuario());
+		
+	}
+	public int modificarAdmin(Usuario u) {
+		return template.update("update user set clave=? where usuario=?",u.getClave(),u.getUsuario());
+		
+	}
 		
 	}
 

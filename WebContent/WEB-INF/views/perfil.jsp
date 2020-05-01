@@ -25,11 +25,19 @@
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 		<!-- Custom stlylesheet -->
 		<style><%@include file="../resources/css/style.css"%></style>
+		<script type="text/javascript">
+		function deshabilitaRetroceso(){
+		    window.location.hash="no-back-button";
+		    window.location.hash="Again-No-back-button" //chrome
+		    window.onhashchange=function(){window.location.hash="no-back-button";}
+		}
+		</script>
 
 
     </head>
-	<body>
+	<body onload="deshabilitaRetroceso()">
 			<!-- HEADER -->
+		<c:if test="${usuario<1}">
 		<header>
 			<!-- TOP HEADER -->
 			<div id="top-header">
@@ -37,6 +45,111 @@
 					<ul class="header-links pull-left">
 						<li><a href="#"><i class="fas fa-phone"></i> +021-95-51-84</a></li>
 						<li><a href="#"><i class="fas fa-envelope-open-text"></i> apppropadel@gmail.com</a></li>
+					</ul>
+					<ul class="header-links pull-right">
+						<li><a href="#"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
+						<li><a href="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesion</a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- /TOP HEADER -->
+
+			<!-- MAIN HEADER -->
+		
+		<div id="header">
+				<!-- container -->
+				<div class="container">
+					<!-- row -->
+					<div class="row">
+					<div class="col-md-3">
+							<div class="header-logo">
+								<a href="cargarInicio" class="logo">
+									<img src="https://i.ibb.co/P6p8kyq/309fee65-116d-474b-a0d1-466806f782a9-200x200-1.png" border="0" width="100px" height="100px">
+								</a>
+							</div>
+						</div>
+						<!-- ACCOUNT -->
+						<div class="col-md-3 clearfix" style="left:590px;">
+							<div class="header-ctn">
+								<div>
+									<a href="#">
+										<i class="fas fa-heart"></i>
+										<span>Pistas favoritas</span>
+										<div class="qty">${numFavoritas}</div>
+									</a>
+								</div>
+								
+								<div>
+									<a href="#">
+										<i class="fas fa-list"></i>
+										<span>Mis reservas</span>
+										<div class="qty">${numReservas}</div>
+									</a>
+								</div>
+							</div>
+						</div>
+					<!-- row -->
+				</div>
+				<!-- container -->
+			</div>
+		</div>
+			<!-- /MAIN HEADER -->
+		</header>
+		<!-- /HEADER -->
+
+		
+		
+		<div class="section">
+			<!-- container -->
+			<div class="container">
+				<!-- row -->
+				<div class="row">
+					<!-- Product details -->
+					<div class="col-md-6 col-md-offset-3">
+						<form:form method="post" action="modificarPerfil">
+							<div class="form-group">
+								<label for = "usuario">Nombre de Usuario: </label>
+								<form:input path="usuario" class="form-control" readonly="true"/>
+							</div>
+							<div class="form-group">
+								<label for ="clave">Contraseña:</label>
+								<form:input path="clave" type="password" class="form-control" />
+							</div>
+							<div class="form-group">
+								<label for ="email">Email:</label>
+								<form:input path="email" class="form-control" readonly="true"/>
+							</div>
+							<div class="form-group">
+								<label for ="nombre">Nombre:</label>
+								<form:input path="nombre" class="form-control" />
+							</div>
+							<div class="form-group">
+								<label for ="apellidos">Apellidos:</label>
+								<form:input path="apellidos" class="form-control" />
+							</div>
+							<div class="form-group">
+								<input type="submit" value="Modificar datos" class="btn btn-success"/>
+							</div>
+				</form:form>
+					</div>
+					<!-- /Product details -->
+							
+				</div>
+				<!-- /row -->
+			</div>
+			<!-- /container -->
+		</div>
+		<!-- /SECTION -->
+		</c:if>
+		<c:if test="${usuario>0}">
+		<!-- HEADER -->
+		<header>
+			<!-- TOP HEADER -->
+			<div id="top-header">
+				<div class="container">
+					<ul class="header-links pull-left">
+						<li><a href=""><i class="fas fa-phone"></i> +021-95-51-84</a></li>
+						<li><a href=""><i class="fas fa-envelope-open-text"></i> apppropadel@gmail.com</a></li>
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
@@ -62,7 +175,7 @@
 						<div class="col-md-4" style="left: 50px">
 							<h3>Modo administrador</h3>
 						</div>
-						<!-- ACCOUNT -->
+							<!-- ACCOUNT -->
 						<div class="col-md-4">
 							<div class="header-ctn">
 								<div>
@@ -84,74 +197,35 @@
 									</a>
 								</div>
 							</div>
-						<!-- ACCOUNT -->
+						</div>
+						<!-- /ACCOUNT -->
+						
 					</div>
 					<!-- row -->
 				</div>
 				<!-- container -->
 			</div>
-		</div>
 			<!-- /MAIN HEADER -->
 		</header>
 		<!-- /HEADER -->
-
-		
-
-		<!-- SECTION -->
 		<div class="section">
 			<!-- container -->
 			<div class="container">
 				<!-- row -->
 				<div class="row">
-					<!-- Product main img -->
-					<div class="col-md-5 col-md-push-2">
-						<div id="product-main-img">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
-							</div>
-						</c:forEach>
-						</div>
-					</div>
-					<!-- /Product main img -->
-
-					<!-- Product thumb imgs -->
-					<div class="col-md-2  col-md-pull-5">
-						<div id="product-imgs">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
-							</div>
-						</c:forEach>
-						</div>
-					</div>
-					<!-- /Product thumb imgs -->
-
 					<!-- Product details -->
-					<div class="col-md-5">
-						<form:form method="post" action="guardarCambiosPista">
+					<div class="col-md-6 col-md-offset-3">
+						<form:form method="post" action="modificarPerfil">
 							<div class="form-group">
-								<label for = "id">Id: </label>
-								<form:input path="id" class="form-control" readonly="true"/>
+								<label for = "usuario">Nombre de Usuario: </label>
+								<form:input path="usuario" class="form-control" readonly="true"/>
 							</div>
 							<div class="form-group">
-								<label for = "nombre">Nombre: </label>
-								<form:input path="nombre" class="form-control"/>
+								<label for ="clave">Contraseña:</label>
+								<form:input path="clave" type="password" class="form-control" />
 							</div>
 							<div class="form-group">
-								<label for = "categoria">Localizacion: </label>
-								<form:input path="localizacion" class="form-control"/>
-							</div>
-							<div class="form-group">
-								<label for ="imagen">Imagen Principal:</label>
-								<form:input path="imagen" class="form-control" />
-							</div>
-							<div class="form-group">
-								<label for ="imagen">Informacion:</label>
-								<form:textarea path="info" class="form-control" />
-							</div>
-							<div class="form-group">
-								<input type="submit" value="Realizar cambios" class="btn btn-success"/>
+								<input type="submit" value="Modificar datos" class="btn btn-success"/>
 							</div>
 				</form:form>
 					</div>
@@ -163,7 +237,7 @@
 			<!-- /container -->
 		</div>
 		<!-- /SECTION -->
-
+		</c:if>
 		<!-- jQuery Plugins -->
 		<script src="../resources/js/jquery.min.js"></script>
 		<script src="../resources/js/bootstrap.min.js"></script>

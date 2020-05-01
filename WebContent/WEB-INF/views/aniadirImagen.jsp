@@ -77,6 +77,12 @@
 										<span>Añadir nueva pista</span>
 									</a>
 								</div>
+								<div>
+									<a href="habilitarEliminarPista">
+										<i class="fas fa-trash"></i>
+										<span>Eliminar pistas</span>
+									</a>
+								</div>
 							</div>
 						<!-- ACCOUNT -->
 					</div>
