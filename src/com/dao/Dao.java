@@ -2,6 +2,8 @@ package com.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -136,9 +138,11 @@ public class Dao {
 			public Reserva mapRow(ResultSet rs, int row) throws SQLException
 			{
 				Reserva r = new Reserva();
-				r.setUsuario(rs.getString(1));
-				r.setIdPista(rs.getInt(2));
-				r.setFecha(new Date(rs.getDate(3).getTime()));
+				r.setIdReserva(rs.getInt(1));
+				r.setUsuario(rs.getString(2));
+				r.setIdPista(rs.getInt(3));
+				r.setFecha(rs.getString(4));
+				r.setHora(rs.getString(5));
 				return r;
 			}
 			
@@ -239,9 +243,11 @@ public class Dao {
 			public Reserva mapRow(ResultSet rs, int row) throws SQLException
 			{
 				Reserva r = new Reserva();
-				r.setUsuario(rs.getString(1));
-				r.setIdPista(rs.getInt(2));
-				r.setFecha(new Date(rs.getDate(3).getTime()));
+				r.setIdReserva(rs.getInt(1));
+				r.setUsuario(rs.getString(2));
+				r.setIdPista(rs.getInt(3));
+				r.setFecha(rs.getString(4));
+				r.setHora(rs.getString(5));
 				return r;
 			}
 			
@@ -261,6 +267,26 @@ public class Dao {
 				p.setImagen(rs.getString(4));
 				p.setInfo(rs.getString(5));
 				return p;
+			}
+			
+			
+		}
+		);
+	}
+
+	public List<Reserva> obtenerHorasReservadas(Reserva r) {
+		return template.query("select * from reserva where fecha='"+r.getFecha()+"' and idPista='"+r.getIdPista()+"'", new RowMapper<Reserva>() {
+			@Override
+			public Reserva mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Reserva r = new Reserva();
+				r.setIdReserva(rs.getInt(1));
+				r.setUsuario(rs.getString(2));
+				r.setIdPista(rs.getInt(3));
+				r.setFecha(rs.getString(4));
+				r.setHora(rs.getString(5));
+				return r;
+				
 			}
 			
 			

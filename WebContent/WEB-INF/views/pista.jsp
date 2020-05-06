@@ -124,10 +124,22 @@
 					<!-- Product details -->
 					<div class="col-md-5">
 						<div class="product-details">
+						<c:if test="${hora<1}">
 							<h2 class="product-name">${pista.nombre}</h2>
 							
 							<p>${pista.info}</p>
-
+							<div class="fecha">
+							<form:form method="post" action="cargarHoras">
+								<p>Introduce la fecha de la reserva</p>
+								<div class="form-group">
+									<form:input path="fecha" class="form-control"/>
+									<form:input path="idPista" type="hidden" value="${pista.id}"/>
+								</div>
+								<div class="form-group">
+									<input type="submit" value="Establecer fecha" class="btn btn-success"/>
+								</div>
+							</form:form>
+							</div>
 							<ul class="product-btns">
 							<c:if test="${favorito==0}">
 								<li><a href="aniadirFav?pista=${pista.nombre}"> Añadir a favoritos<i class="fas fa-heart"></i></a></li>
@@ -136,6 +148,10 @@
 								<li><a href="eliminarFav?pista=${pista.nombre}"> Eliminar de favoritos<i class="fas fa-trash-alt"></i></a></li>
 							</c:if>
 							</ul>
+						</c:if>
+						<c:if test="${hora>0}">
+						</c:if>
+							
 						</div>
 					</div>
 					<!-- /Product details -->

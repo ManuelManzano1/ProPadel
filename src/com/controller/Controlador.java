@@ -1,6 +1,9 @@
 package com.controller;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -43,6 +46,7 @@ public class Controlador {
 	@Autowired
 	public MailSender mailSender;
 	HttpSession sesionP;
+	Reserva r;
 	
 	/*
 	 * Model and view composición del modelo lógico de datos
@@ -64,7 +68,6 @@ public class Controlador {
 			if(usuario.get(0).getTipo().equalsIgnoreCase("A")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
 				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
-				sesion.setAttribute("tipo", "A");
 				modelo.addObject("pistas", pistas);
 				sesionP=sesion;
 				return modelo;
@@ -75,7 +78,6 @@ public class Controlador {
 				List<Favorita> favoritas = dao.obtenerFavoritas(usuario.get(0).getUsuario());
 				List<Reserva> reservas = dao.obtenerReservas(usuario.get(0).getUsuario());
 				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
-				sesion.setAttribute("tipo", "U");
 				modelo.addObject("numFavoritas", favoritas.size());
 				modelo.addObject("numReservas", reservas.size());
 				modelo.addObject("pistas", pistas);
@@ -94,7 +96,7 @@ public class Controlador {
 	@RequestMapping(value ="/cargarInicio",method = RequestMethod.GET)
 	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u) {
 			List<Pista> pistas = dao.obtenerPistas();
-			if(sesionP.getAttribute("tipo").toString().equalsIgnoreCase("A")) {
+			if(sesionP.getAttribute("usuario").toString().equalsIgnoreCase("admin")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
 				modelo.addObject("pistas", pistas);
 				return modelo;
@@ -208,6 +210,8 @@ public class Controlador {
 		modelo.addObject("numReservas", reservas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
+		modelo.addObject("command",new Reserva());
+		modelo.addObject("hora", 0);
 		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
 		if(f.size()<1) {
 			modelo.addObject("favorito", 0);
@@ -230,19 +234,9 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/guardarCambiosPista",method = RequestMethod.POST)
 	public ModelAndView guardarCambiosPista(@ModelAttribute("pista")Pista p) {
-		List<Pista> pistas  = dao.obtenerPistas(p.getNombre());
-		if(pistas.size()<1) {
-			dao.modificarPista(p);
-			return new ModelAndView("redirect:/cargarInicio");
-		}
-		else {
-			List<Imagen> imagenes = dao.obtenerImagenesPista(p.getId());
-			ModelAndView modelo = new ModelAndView("editarPista");
-			modelo.addObject("repetido", 1);
-			modelo.addObject("command", p);
-			modelo.addObject("imagenes", imagenes);
-			return modelo;
-		}
+		dao.modificarPista(p);
+		return new ModelAndView("redirect:/cargarInicio");
+		
 	}
 	@RequestMapping(value ="/accederAniadirImagenesPista",method = RequestMethod.GET)
 	public ModelAndView accesoEditarImagenesPista(@RequestParam("pista")String nombrePista) {
@@ -306,6 +300,7 @@ public class Controlador {
 		modelo.addObject("numReservas", reservas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
+		modelo.addObject("hora", 0);
 		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
 		if(f.size()<1) {
 			modelo.addObject("favorito", 0);
@@ -328,6 +323,7 @@ public class Controlador {
 		modelo.addObject("numReservas", reservas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
+		modelo.addObject("hora", 0);
 		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
 		if(f.size()<1) {
 			modelo.addObject("favorito", 0);
@@ -394,5 +390,39 @@ public class Controlador {
 		}
 		
 		
+	}
+	public List<String> realizarListaHoras(){
+		List<String> listaHoras = new ArrayList<>();
+		listaHoras.add("09:00");
+		listaHoras.add("10:00");
+		listaHoras.add("11:00");
+		listaHoras.add("12:00");
+		listaHoras.add("13:00");
+		listaHoras.add("14:00");
+		listaHoras.add("15:00");
+		listaHoras.add("16:00");
+		listaHoras.add("17:00");
+		listaHoras.add("18:00");
+		listaHoras.add("19:00");
+		listaHoras.add("20:00");
+		listaHoras.add("21:00");
+		return listaHoras;
+	}
+	@RequestMapping(value ="/cargarHoras",method = RequestMethod.POST)
+	public ModelAndView cargarHoras(@ModelAttribute("reserva")Reserva re) {
+		r = re;
+		List<String> listaHoras = realizarListaHoras();
+		List<Reserva> listaReservadas = dao.obtenerHorasReservadas(r);
+		for(int i=0;i<listaReservadas.size();i++) {
+			for(int j=0;j<listaHoras.size();j++) {
+				if(listaReservadas.get(i).getHora().toString().equalsIgnoreCase(listaHoras.get(j))) {
+					listaHoras.remove(j);
+				}
+			}
+		}
+		for(String hora:listaHoras) {
+			System.out.println("dsds"+hora);
+		}
+		return new ModelAndView("login");
 	}
 }
