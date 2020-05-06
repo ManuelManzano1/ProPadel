@@ -133,7 +133,7 @@ public class Dao {
 		);
 	}
 	public List<Reserva> obtenerReservas(String usuario) {
-		return template.query("select * from reserva where usuario='"+usuario+"' and fecha > now()+INTERVAL+2 hour ", new RowMapper<Reserva>() {
+		return template.query("select * from reserva where usuario='"+usuario+"'", new RowMapper<Reserva>() {
 			@Override
 			public Reserva mapRow(ResultSet rs, int row) throws SQLException
 			{
@@ -145,7 +145,6 @@ public class Dao {
 				r.setHora(rs.getString(5));
 				return r;
 			}
-			
 			
 		}
 		);
@@ -292,6 +291,10 @@ public class Dao {
 			
 		}
 		);
+	}
+
+	public Pista obtenerPistaPorId(int idPista) {
+		return template.queryForObject("select * from pista where Id=?",new Object[] {idPista},new BeanPropertyRowMapper<Pista>(Pista.class));
 	}
 		
 	}

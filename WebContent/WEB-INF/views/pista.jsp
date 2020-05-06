@@ -130,6 +130,16 @@
 							<p>${pista.info}</p>
 							<div class="fecha">
 							<form:form method="post" action="cargarHoras">
+								<c:if test="${formato>0}">
+									<div class="wrap-input100">
+										<h3>El formato de la fecha no es el adecuado</h3>
+									</div>	
+								</c:if>
+								<c:if test="${fecha>0}">
+									<div class="wrap-input100">
+										<h3>La fecha introducida es anterior al dia de hoy</h3>
+									</div>	
+								</c:if>
 								<p>Introduce la fecha de la reserva</p>
 								<div class="form-group">
 									<form:input path="fecha" class="form-control"/>

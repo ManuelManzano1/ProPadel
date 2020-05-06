@@ -4,6 +4,7 @@ package com.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -77,9 +78,10 @@ public class Controlador {
 				ModelAndView modelo=new ModelAndView("inicioUsuario");
 				List<Favorita> favoritas = dao.obtenerFavoritas(usuario.get(0).getUsuario());
 				List<Reserva> reservas = dao.obtenerReservas(usuario.get(0).getUsuario());
+				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
 				modelo.addObject("numFavoritas", favoritas.size());
-				modelo.addObject("numReservas", reservas.size());
+				modelo.addObject("numReservas", reservasActivas.size());
 				modelo.addObject("pistas", pistas);
 				sesionP=sesion;
 				
@@ -106,12 +108,28 @@ public class Controlador {
 				ModelAndView modelo=new ModelAndView("inicioUsuario");
 				List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
 				List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 				modelo.addObject("numFavoritas", favoritas.size());
-				modelo.addObject("numReservas", reservas.size());
+				modelo.addObject("numReservas", reservasActivas.size());
 				modelo.addObject("pistas", pistas);
 				return modelo;
 			}
 	
+	}
+	private List<Reserva> eliminarReservasAntiguas(List<Reserva> reservas) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+		List<Reserva> reservasActivas = new ArrayList<>();
+		for(int i=0;i<reservas.size();i++) {
+			try {
+				if(formato.parse(reservas.get(i).getFecha()).after(new Date())) {
+					reservasActivas.add(reservas.get(i));
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return reservasActivas;
 	}
 	@RequestMapping(value ="/comprobarClave",method = RequestMethod.GET)
 	public String cargarRecuperacion(Model modelo) {
@@ -206,8 +224,9 @@ public class Controlador {
 		ModelAndView modelo = new ModelAndView("pista");
 		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
 		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
-		modelo.addObject("numReservas", reservas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("command",new Reserva());
@@ -296,8 +315,9 @@ public class Controlador {
 		ModelAndView modelo = new ModelAndView("pista");
 		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
 		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
-		modelo.addObject("numReservas", reservas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("hora", 0);
@@ -319,8 +339,9 @@ public class Controlador {
 		ModelAndView modelo = new ModelAndView("pista");
 		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
 		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
-		modelo.addObject("numReservas", reservas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("hora", 0);
@@ -345,9 +366,10 @@ public class Controlador {
 		else {
 			List<Favorita> favoritas = dao.obtenerFavoritas(usuario);
 			List<Reserva> reservas = dao.obtenerReservas(usuario);
+			List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 			modelo.addObject("command", u);
 			modelo.addObject("numFavoritas", favoritas.size());
-			modelo.addObject("numReservas", reservas.size());
+			modelo.addObject("numReservas", reservasActivas.size());
 			modelo.addObject("usuario", 0);
 		}
 		return modelo;
@@ -410,19 +432,74 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/cargarHoras",method = RequestMethod.POST)
 	public ModelAndView cargarHoras(@ModelAttribute("reserva")Reserva re) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
 		r = re;
-		List<String> listaHoras = realizarListaHoras();
-		List<Reserva> listaReservadas = dao.obtenerHorasReservadas(r);
-		for(int i=0;i<listaReservadas.size();i++) {
-			for(int j=0;j<listaHoras.size();j++) {
-				if(listaReservadas.get(i).getHora().toString().equalsIgnoreCase(listaHoras.get(j))) {
-					listaHoras.remove(j);
+		if(re.getFecha().substring(2, 3).equals("-")&&re.getFecha().substring(5, 6).equals("-")&&re.getFecha().length()==10) {
+			try {
+				if(formato.parse(re.getFecha()).after(new Date())) {
+					List<String> listaHoras = realizarListaHoras();
+					List<Reserva> listaReservadas = dao.obtenerHorasReservadas(r);
+					for(int i=0;i<listaReservadas.size();i++) {
+						for(int j=0;j<listaHoras.size();j++) {
+							if(listaReservadas.get(i).getHora().toString().equalsIgnoreCase(listaHoras.get(j))) {
+								listaHoras.remove(j);
+							}
+						}
+					}
+					for(String hora:listaHoras) {
+						System.out.println("dsds"+hora);
+					}
+					return new ModelAndView("login");
 				}
+				else {
+					Pista pista = dao.obtenerPistaPorId(re.getIdPista());
+					List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
+					ModelAndView modelo = new ModelAndView("pista");
+					List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
+					List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+					List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+					modelo.addObject("numFavoritas", favoritas.size());
+					modelo.addObject("numReservas", reservasActivas.size());
+					modelo.addObject("pista", pista);
+					modelo.addObject("imagenes", imagenes);
+					modelo.addObject("command",new Reserva());
+					modelo.addObject("hora", 0);
+					modelo.addObject("fecha", 1);
+					List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+					if(f.size()<1) {
+						modelo.addObject("favorito", 0);
+					}
+					else {
+						modelo.addObject("favorito", 1);
+					}
+					return modelo;
+				}
+			} catch (ParseException e) {
+				return null;
 			}
 		}
-		for(String hora:listaHoras) {
-			System.out.println("dsds"+hora);
+		else {
+			Pista pista = dao.obtenerPistaPorId(re.getIdPista());
+			List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
+			ModelAndView modelo = new ModelAndView("pista");
+			List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
+			List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+			List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+			modelo.addObject("numFavoritas", favoritas.size());
+			modelo.addObject("numReservas", reservasActivas.size());
+			modelo.addObject("pista", pista);
+			modelo.addObject("imagenes", imagenes);
+			modelo.addObject("command",new Reserva());
+			modelo.addObject("hora", 0);
+			modelo.addObject("formato", 1);
+			List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+			if(f.size()<1) {
+				modelo.addObject("favorito", 0);
+			}
+			else {
+				modelo.addObject("favorito", 1);
+			}
+			return modelo;
 		}
-		return new ModelAndView("login");
 	}
 }
