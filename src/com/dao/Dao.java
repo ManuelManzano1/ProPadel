@@ -169,8 +169,8 @@ public class Dao {
 		return template.queryForObject("select * from pista where nombre=?",new Object[] {nombre},new BeanPropertyRowMapper<Pista>(Pista.class));
 	}
 
-	public int aniadirFavorito(String nombrePista, String usuario) {
-		return template.update("insert into favoritas (usuario,NombrePista) values(?,?)",usuario,nombrePista);
+	public int aniadirFavorito(int idPista, String usuario) {
+		return template.update("insert into favoritas (usuario,idPista) values(?,?)",usuario,idPista);
 		
 	}
 	public List<Favorita> comprobarFavorito(String usuario,int idPista) {
@@ -295,6 +295,11 @@ public class Dao {
 
 	public Pista obtenerPistaPorId(int idPista) {
 		return template.queryForObject("select * from pista where Id=?",new Object[] {idPista},new BeanPropertyRowMapper<Pista>(Pista.class));
+	}
+
+	public int hacerReserva(Reserva res) {
+		return template.update("insert into reserva (usuario,idPista,fecha,hora) values(?,?,?,?)",res.getUsuario(),res.getIdPista(),res.getFecha(),res.getHora());
+		
 	}
 		
 	}

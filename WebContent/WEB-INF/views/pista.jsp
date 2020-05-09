@@ -124,10 +124,11 @@
 					<!-- Product details -->
 					<div class="col-md-5">
 						<div class="product-details">
-						<c:if test="${hora<1}">
+						
 							<h2 class="product-name">${pista.nombre}</h2>
 							
 							<p>${pista.info}</p>
+							<c:if test="${hora<1}">
 							<div class="fecha">
 							<form:form method="post" action="cargarHoras">
 								<c:if test="${formato>0}">
@@ -142,8 +143,9 @@
 								</c:if>
 								<p>Introduce la fecha de la reserva</p>
 								<div class="form-group">
-									<form:input path="fecha" class="form-control"/>
+									<form:input path="fecha" class="form-control" placeholder="dd-MM-yyyy"/>
 									<form:input path="idPista" type="hidden" value="${pista.id}"/>
+									<form:input path="usuario" type="hidden" value="${sessionScope.usuario}"/>
 								</div>
 								<div class="form-group">
 									<input type="submit" value="Establecer fecha" class="btn btn-success"/>
@@ -160,6 +162,11 @@
 							</ul>
 						</c:if>
 						<c:if test="${hora>0}">
+							<c:forEach items="${listaHoras}" var="r">
+								<div class="hora">
+									<a href="hacerReserva?hora=${r}"><img src="https://i.ibb.co/5XDfp0N/padel1.jpg" width="150px" height="120px">${r}</a>
+								</div>
+							</c:forEach>
 						</c:if>
 							
 						</div>

@@ -4,6 +4,7 @@ package com.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class Controlador {
 	@Autowired
 	public MailSender mailSender;
 	HttpSession sesionP;
-	Reserva r;
+	Reserva res;
 	
 	/*
 	 * Model and view composición del modelo lógico de datos
@@ -309,8 +310,8 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/aniadirFav",method = RequestMethod.GET)
 	public ModelAndView aniadirFavorita(@RequestParam("pista")String nombrePista) {
-		dao.aniadirFavorito(nombrePista,sesionP.getAttribute("usuario").toString());
 		Pista pista = dao.obtenerPista(nombrePista);
+		dao.aniadirFavorito(pista.getId(),sesionP.getAttribute("usuario").toString());
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("pista");
 		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
@@ -321,13 +322,8 @@ public class Controlador {
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("hora", 0);
-		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
-		if(f.size()<1) {
-			modelo.addObject("favorito", 0);
-		}
-		else {
-			modelo.addObject("favorito", 1);
-		}
+		modelo.addObject("command",new Reserva());
+		modelo.addObject("favorito", 1);
 		return modelo;
 		
 	}
@@ -345,13 +341,8 @@ public class Controlador {
 		modelo.addObject("pista", pista);
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("hora", 0);
-		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
-		if(f.size()<1) {
-			modelo.addObject("favorito", 0);
-		}
-		else {
-			modelo.addObject("favorito", 1);
-		}
+		modelo.addObject("command",new Reserva());
+		modelo.addObject("favorito", 0);
 		return modelo;
 		
 	}
@@ -433,12 +424,17 @@ public class Controlador {
 	@RequestMapping(value ="/cargarHoras",method = RequestMethod.POST)
 	public ModelAndView cargarHoras(@ModelAttribute("reserva")Reserva re) {
 		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
-		r = re;
+		SimpleDateFormat formatoHoras = new SimpleDateFormat("HH:mm");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DAY_OF_YEAR, -1);
+		String hora = formatoHoras.format(new Date());
+		res = re;
 		if(re.getFecha().substring(2, 3).equals("-")&&re.getFecha().substring(5, 6).equals("-")&&re.getFecha().length()==10) {
 			try {
-				if(formato.parse(re.getFecha()).after(new Date())) {
+				if(formato.parse(re.getFecha()).after(calendar.getTime())) {
 					List<String> listaHoras = realizarListaHoras();
-					List<Reserva> listaReservadas = dao.obtenerHorasReservadas(r);
+					List<Reserva> listaReservadas = dao.obtenerHorasReservadas(res);
 					for(int i=0;i<listaReservadas.size();i++) {
 						for(int j=0;j<listaHoras.size();j++) {
 							if(listaReservadas.get(i).getHora().toString().equalsIgnoreCase(listaHoras.get(j))) {
@@ -446,12 +442,49 @@ public class Controlador {
 							}
 						}
 					}
-					for(String hora:listaHoras) {
-						System.out.println("dsds"+hora);
+					//Codigo para eliminar las horas anteriores a la actual
+					if(res.getFecha().equalsIgnoreCase(formato.format(new Date()))) {
+					while(true) {
+						if(Integer.parseInt(hora.substring(0, 2))>Integer.parseInt(listaHoras.get(0).substring(0, 2))) {
+							listaHoras.remove(0);
+						}
+						else if(Integer.parseInt(hora.substring(0, 2))==Integer.parseInt(listaHoras.get(0).substring(0, 2))) {
+							if(Integer.parseInt(hora.substring(3, 5))>Integer.parseInt(listaHoras.get(0).substring(3, 5))) {
+								listaHoras.remove(0);
+							}
+						}
+						else {
+							break;
+						}
+						
+						}
 					}
-					return new ModelAndView("login");
+					//Carga las horas disponibles
+					
+					Pista pista = dao.obtenerPistaPorId(re.getIdPista());
+					List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
+					ModelAndView modelo = new ModelAndView("pista");
+					List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
+					List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+					List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+					modelo.addObject("numFavoritas", favoritas.size());
+					modelo.addObject("numReservas", reservasActivas.size());
+					modelo.addObject("pista", pista);
+					modelo.addObject("imagenes", imagenes);
+					modelo.addObject("command",new Reserva());
+					modelo.addObject("hora", 1);
+					modelo.addObject("listaHoras",listaHoras);
+					List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+					if(f.size()<1) {
+						modelo.addObject("favorito", 0);
+					}
+					else {
+						modelo.addObject("favorito", 1);
+					}
+					return modelo;
 				}
 				else {
+					//Carga la misma pagina pero indicando que la fecha introducida es anterior
 					Pista pista = dao.obtenerPistaPorId(re.getIdPista());
 					List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 					ModelAndView modelo = new ModelAndView("pista");
@@ -479,6 +512,7 @@ public class Controlador {
 			}
 		}
 		else {
+			//Carga la misma pagina pero indicando que el formato no es el adecuado
 			Pista pista = dao.obtenerPistaPorId(re.getIdPista());
 			List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 			ModelAndView modelo = new ModelAndView("pista");
@@ -501,5 +535,11 @@ public class Controlador {
 			}
 			return modelo;
 		}
+	}
+	@RequestMapping(value ="/hacerReserva",method = RequestMethod.GET)
+	public String hacerReserva(@RequestParam("hora")String hora) {
+		res.setHora(hora);
+		dao.hacerReserva(res);
+		return "redirect:/cargarInicio";
 	}
 }
