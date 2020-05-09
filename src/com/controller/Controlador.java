@@ -80,12 +80,16 @@ public class Controlador {
 				List<Favorita> favoritas = dao.obtenerFavoritas(usuario.get(0).getUsuario());
 				List<Reserva> reservas = dao.obtenerReservas(usuario.get(0).getUsuario());
 				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+				List<String> listaLugares = dao.obtenerLocalizaciones();
 				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
 				modelo.addObject("numFavoritas", favoritas.size());
 				modelo.addObject("numReservas", reservasActivas.size());
 				modelo.addObject("pistas", pistas);
+				modelo.addObject("lugares",listaLugares);
 				sesionP=sesion;
-				
+				for(String f:listaLugares) {
+					System.out.println("d"+f);
+				} 
 				return modelo;
 			}
 		}
@@ -97,22 +101,26 @@ public class Controlador {
 	
 	}
 	@RequestMapping(value ="/cargarInicio",method = RequestMethod.GET)
-	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u) {
+	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u,HttpSession sesion) {
 			List<Pista> pistas = dao.obtenerPistas();
+			sesion.setAttribute("usuario", u.getUsuario());
+			sesionP=sesion;
 			if(sesionP.getAttribute("usuario").toString().equalsIgnoreCase("admin")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
 				modelo.addObject("pistas", pistas);
+				sesionP=sesion;
 				return modelo;
 			}
 			else {
-				
 				ModelAndView modelo=new ModelAndView("inicioUsuario");
-				List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-				List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+				List<Favorita> favoritas = dao.obtenerFavoritas(u.getUsuario());
+				List<Reserva> reservas = dao.obtenerReservas(u.getUsuario());
 				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+				List<String> listaLugares = dao.obtenerLocalizaciones();
 				modelo.addObject("numFavoritas", favoritas.size());
 				modelo.addObject("numReservas", reservasActivas.size());
 				modelo.addObject("pistas", pistas);
+				modelo.addObject("lugares",listaLugares);
 				return modelo;
 			}
 	
@@ -214,7 +222,6 @@ public class Controlador {
 	}
 	@RequestMapping(value ="/logout",method = RequestMethod.GET)
 	public ModelAndView logout(Model modelo) {
-		sesionP.setAttribute("usuario", null);
 		return new ModelAndView("login");
 		
 	}
@@ -541,5 +548,21 @@ public class Controlador {
 		res.setHora(hora);
 		dao.hacerReserva(res);
 		return "redirect:/cargarInicio";
+	}
+	@RequestMapping(value ="/filtro",method = RequestMethod.GET)
+	public ModelAndView filtro(@RequestParam("lugar")String lugar,HttpSession sesion) {
+		ModelAndView modelo=new ModelAndView("inicioUsuario");
+		List<Pista> pistasFiltro = dao.obtenerPistasFiltro(lugar);
+		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
+		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+		List<String> listaLugares = dao.obtenerLocalizaciones();
+		sesion.setAttribute("usuario", sesionP.getAttribute("usuario").toString());
+		modelo.addObject("numFavoritas", favoritas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
+		modelo.addObject("pistas", pistasFiltro);
+		modelo.addObject("lugares",listaLugares);
+		sesionP=sesion;
+		return modelo;
 	}
 }

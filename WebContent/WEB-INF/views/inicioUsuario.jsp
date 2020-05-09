@@ -98,6 +98,15 @@
 				<!-- container -->
 			</div>
 			<!-- /MAIN HEADER -->
+			<div id="top-header">
+				<div class="container">
+					<ul class="header-links pull-left">
+						<c:forEach items="${lugares}" var="l">
+						<li><a href="filtro?lugar=${l}">${l}</a></li>
+						</c:forEach>
+					</ul>
+				</div>
+			</div>
 		</header>
 		<!-- /HEADER -->
 		<div class="section">

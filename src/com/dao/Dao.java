@@ -116,6 +116,24 @@ public class Dao {
 		}
 		);
 	}
+	public List<Pista> obtenerPistasFiltro(String lugar) {
+		return template.query("select * from pista where localizacion='"+lugar+"'", new RowMapper<Pista>() {
+			@Override
+			public Pista mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Pista p=new Pista();
+				p.setId(rs.getInt(1));
+				p.setNombre(rs.getString(2));
+				p.setLocalizacion(rs.getString(3));
+				p.setImagen(rs.getString(4));
+				p.setInfo(rs.getString(5));
+				return p;
+			}
+			
+			
+		}
+		);
+	}
 
 	public List<Favorita> obtenerFavoritas(String usuario) {
 		return template.query("select * from favoritas where usuario='"+usuario+"'", new RowMapper<Favorita>() {
@@ -300,6 +318,18 @@ public class Dao {
 	public int hacerReserva(Reserva res) {
 		return template.update("insert into reserva (usuario,idPista,fecha,hora) values(?,?,?,?)",res.getUsuario(),res.getIdPista(),res.getFecha(),res.getHora());
 		
+	}
+
+	public List<String> obtenerLocalizaciones() {
+		return template.query("select distinct(localizacion) from pista ", new RowMapper<String>() {
+			@Override
+			public String mapRow(ResultSet rs, int row) throws SQLException
+			{
+				return rs.getString(1);
+				
+			}	
+		}
+		);
 	}
 		
 	}
