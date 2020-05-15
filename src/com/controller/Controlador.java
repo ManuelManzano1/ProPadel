@@ -608,7 +608,7 @@ public class Controlador {
 	
 	@RequestMapping(value ="/listaReservasAdmin",method = RequestMethod.GET)
 	public ModelAndView listaReservasUsuario() {
-		ModelAndView modelo=new ModelAndView("listaReservas");
+		ModelAndView modelo=new ModelAndView("listaReservasAdmin");
 		List<Reserva> reservas = dao.obtenerTodasReservas();
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		List<PistaReserva> reservasPistas = new ArrayList<>();
