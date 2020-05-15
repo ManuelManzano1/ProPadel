@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
-
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -33,6 +32,7 @@ import com.dao.Dao;
 import com.modelo.Favorita;
 import com.modelo.Imagen;
 import com.modelo.Pista;
+import com.modelo.PistaReserva;
 import com.modelo.Reserva;
 import com.modelo.Usuario;
 
@@ -47,8 +47,9 @@ public class Controlador {
 	public JavaMailSender emailSender;
 	@Autowired
 	public MailSender mailSender;
-	HttpSession sesionP;
+	String usuarioActivo="";
 	Reserva res;
+	HttpSession sesion;
 	
 	/*
 	 * Model and view composición del modelo lógico de datos
@@ -69,9 +70,9 @@ public class Controlador {
 			List<Pista> pistas = dao.obtenerPistas();
 			if(usuario.get(0).getTipo().equalsIgnoreCase("A")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
-				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
+				usuarioActivo = usuario.get(0).getUsuario();
+				sesion.setAttribute("usuario", usuarioActivo);
 				modelo.addObject("pistas", pistas);
-				sesionP=sesion;
 				return modelo;
 			}
 			else {
@@ -81,15 +82,12 @@ public class Controlador {
 				List<Reserva> reservas = dao.obtenerReservas(usuario.get(0).getUsuario());
 				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 				List<String> listaLugares = dao.obtenerLocalizaciones();
-				sesion.setAttribute("usuario", usuario.get(0).getUsuario());
+				usuarioActivo = usuario.get(0).getUsuario();
+				sesion.setAttribute("usuario", usuarioActivo);
 				modelo.addObject("numFavoritas", favoritas.size());
 				modelo.addObject("numReservas", reservasActivas.size());
 				modelo.addObject("pistas", pistas);
 				modelo.addObject("lugares",listaLugares);
-				sesionP=sesion;
-				for(String f:listaLugares) {
-					System.out.println("d"+f);
-				} 
 				return modelo;
 			}
 		}
@@ -100,30 +98,27 @@ public class Controlador {
 		}
 	
 	}
-	@RequestMapping(value ="/cargarInicio",method = RequestMethod.GET)
-	public ModelAndView cargarInicio(@ModelAttribute("us")Usuario u,HttpSession sesion) {
+	@RequestMapping(value ="/cargarInicioUsuario",method = RequestMethod.GET)
+	public ModelAndView cargarInicioUsuario() {
 			List<Pista> pistas = dao.obtenerPistas();
-			sesion.setAttribute("usuario", u.getUsuario());
-			sesionP=sesion;
-			if(sesionP.getAttribute("usuario").toString().equalsIgnoreCase("admin")) {
-				ModelAndView modelo = new ModelAndView("inicioAdmin");
-				modelo.addObject("pistas", pistas);
-				sesionP=sesion;
-				return modelo;
-			}
-			else {
-				ModelAndView modelo=new ModelAndView("inicioUsuario");
-				List<Favorita> favoritas = dao.obtenerFavoritas(u.getUsuario());
-				List<Reserva> reservas = dao.obtenerReservas(u.getUsuario());
-				List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
-				List<String> listaLugares = dao.obtenerLocalizaciones();
-				modelo.addObject("numFavoritas", favoritas.size());
-				modelo.addObject("numReservas", reservasActivas.size());
-				modelo.addObject("pistas", pistas);
-				modelo.addObject("lugares",listaLugares);
-				return modelo;
-			}
+			ModelAndView modelo=new ModelAndView("inicioUsuario");
+			List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+			List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
+			List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+			List<String> listaLugares = dao.obtenerLocalizaciones();
+			modelo.addObject("numFavoritas", favoritas.size());
+			modelo.addObject("numReservas", reservasActivas.size());
+			modelo.addObject("pistas", pistas);
+			modelo.addObject("lugares",listaLugares);
+			return modelo;
+	}
 	
+	@RequestMapping(value ="/cargarInicioAdmin",method = RequestMethod.GET)
+	public ModelAndView cargarInicioAdmin() {
+		List<Pista> pistas = dao.obtenerPistas();
+			ModelAndView modelo = new ModelAndView("inicioAdmin");
+			modelo.addObject("pistas", pistas);
+			return modelo;
 	}
 	private List<Reserva> eliminarReservasAntiguas(List<Reserva> reservas) {
 		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
@@ -230,8 +225,8 @@ public class Controlador {
 		Pista pista = dao.obtenerPista(nombrePista);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("pista");
-		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
 		modelo.addObject("numReservas", reservasActivas.size());
@@ -239,7 +234,7 @@ public class Controlador {
 		modelo.addObject("imagenes", imagenes);
 		modelo.addObject("command",new Reserva());
 		modelo.addObject("hora", 0);
-		List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+		List<Favorita> f = dao.comprobarFavorito(usuarioActivo,pista.getId());
 		if(f.size()<1) {
 			modelo.addObject("favorito", 0);
 		}
@@ -262,7 +257,7 @@ public class Controlador {
 	@RequestMapping(value ="/guardarCambiosPista",method = RequestMethod.POST)
 	public ModelAndView guardarCambiosPista(@ModelAttribute("pista")Pista p) {
 		dao.modificarPista(p);
-		return new ModelAndView("redirect:/cargarInicio");
+		return new ModelAndView("redirect:/cargarInicioAdmin");
 		
 	}
 	@RequestMapping(value ="/accederAniadirImagenesPista",method = RequestMethod.GET)
@@ -282,7 +277,7 @@ public class Controlador {
 	@RequestMapping(value ="/aniadirImagen",method = RequestMethod.POST)
 	public String aniadirImagen(@ModelAttribute("imagen")Imagen i) {
 		dao.aniadirImagen(i);
-		return "redirect:/cargarInicio";
+		return "redirect:/cargarInicioAdmin";
 		
 	}
 	@RequestMapping(value ="/accederAniadirPista",method = RequestMethod.GET)
@@ -304,7 +299,7 @@ public class Controlador {
 			if(pistas.size()<1) {
 				dao.aniadirPista(p);
 				dao.aniadirImagen(p);
-				return new ModelAndView("redirect:/cargarInicio");
+				return new ModelAndView("redirect:/cargarInicioAdmin");
 			}
 			else {
 				ModelAndView modelo = new ModelAndView("aniadirPista");
@@ -318,11 +313,11 @@ public class Controlador {
 	@RequestMapping(value ="/aniadirFav",method = RequestMethod.GET)
 	public ModelAndView aniadirFavorita(@RequestParam("pista")String nombrePista) {
 		Pista pista = dao.obtenerPista(nombrePista);
-		dao.aniadirFavorito(pista.getId(),sesionP.getAttribute("usuario").toString());
+		dao.aniadirFavorito(pista.getId(),usuarioActivo);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("pista");
-		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
 		modelo.addObject("numReservas", reservasActivas.size());
@@ -337,11 +332,11 @@ public class Controlador {
 	@RequestMapping(value ="/eliminarFav",method = RequestMethod.GET)
 	public ModelAndView eliminarFavorita(@RequestParam("pista")String nombrePista) {
 		Pista pista = dao.obtenerPista(nombrePista);
-		dao.eliminarFavorito(pista.getId(),sesionP.getAttribute("usuario").toString());
+		dao.eliminarFavorito(pista.getId(),usuarioActivo);
 		List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 		ModelAndView modelo = new ModelAndView("pista");
-		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		modelo.addObject("numFavoritas", favoritas.size());
 		modelo.addObject("numReservas", reservasActivas.size());
@@ -377,11 +372,12 @@ public class Controlador {
 	public String modificarPerfil(@ModelAttribute("usuario")Usuario u) {
 		if(u.getUsuario().equalsIgnoreCase("admin")) {
 			dao.modificarAdmin(u);
+			return "redirect:/cargarInicioAdmin";
 		}
 		else {
 			dao.modificarUsuario(u);
+			return "redirect:/cargarInicioUsuario";
 		}
-		return "redirect:/cargarInicio";
 		
 	}
 	@RequestMapping(value ="/habilitarEliminarPista",method = RequestMethod.GET)
@@ -406,7 +402,7 @@ public class Controlador {
 		else {
 			dao.eliminarPista(p);
 			dao.eliminarImagenesPista(p);
-			return new ModelAndView("redirect:/cargarInicio");
+			return new ModelAndView("redirect:/cargarInicioAdmin");
 		}
 		
 		
@@ -471,8 +467,8 @@ public class Controlador {
 					Pista pista = dao.obtenerPistaPorId(re.getIdPista());
 					List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 					ModelAndView modelo = new ModelAndView("pista");
-					List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-					List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+					List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+					List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 					List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 					modelo.addObject("numFavoritas", favoritas.size());
 					modelo.addObject("numReservas", reservasActivas.size());
@@ -481,7 +477,7 @@ public class Controlador {
 					modelo.addObject("command",new Reserva());
 					modelo.addObject("hora", 1);
 					modelo.addObject("listaHoras",listaHoras);
-					List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+					List<Favorita> f = dao.comprobarFavorito(usuarioActivo,pista.getId());
 					if(f.size()<1) {
 						modelo.addObject("favorito", 0);
 					}
@@ -495,8 +491,8 @@ public class Controlador {
 					Pista pista = dao.obtenerPistaPorId(re.getIdPista());
 					List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 					ModelAndView modelo = new ModelAndView("pista");
-					List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-					List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+					List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+					List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 					List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 					modelo.addObject("numFavoritas", favoritas.size());
 					modelo.addObject("numReservas", reservasActivas.size());
@@ -505,7 +501,7 @@ public class Controlador {
 					modelo.addObject("command",new Reserva());
 					modelo.addObject("hora", 0);
 					modelo.addObject("fecha", 1);
-					List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+					List<Favorita> f = dao.comprobarFavorito(usuarioActivo,pista.getId());
 					if(f.size()<1) {
 						modelo.addObject("favorito", 0);
 					}
@@ -523,8 +519,8 @@ public class Controlador {
 			Pista pista = dao.obtenerPistaPorId(re.getIdPista());
 			List<Imagen> imagenes = dao.obtenerImagenesPista(pista.getId());
 			ModelAndView modelo = new ModelAndView("pista");
-			List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-			List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+			List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+			List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 			List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 			modelo.addObject("numFavoritas", favoritas.size());
 			modelo.addObject("numReservas", reservasActivas.size());
@@ -533,7 +529,7 @@ public class Controlador {
 			modelo.addObject("command",new Reserva());
 			modelo.addObject("hora", 0);
 			modelo.addObject("formato", 1);
-			List<Favorita> f = dao.comprobarFavorito(sesionP.getAttribute("usuario").toString(),pista.getId());
+			List<Favorita> f = dao.comprobarFavorito(usuarioActivo,pista.getId());
 			if(f.size()<1) {
 				modelo.addObject("favorito", 0);
 			}
@@ -547,22 +543,88 @@ public class Controlador {
 	public String hacerReserva(@RequestParam("hora")String hora) {
 		res.setHora(hora);
 		dao.hacerReserva(res);
-		return "redirect:/cargarInicio";
+		return "redirect:/cargarInicioUsuario";
 	}
 	@RequestMapping(value ="/filtro",method = RequestMethod.GET)
-	public ModelAndView filtro(@RequestParam("lugar")String lugar,HttpSession sesion) {
+	public ModelAndView filtro(@RequestParam("lugar")String lugar) {
 		ModelAndView modelo=new ModelAndView("inicioUsuario");
 		List<Pista> pistasFiltro = dao.obtenerPistasFiltro(lugar);
-		List<Favorita> favoritas = dao.obtenerFavoritas(sesionP.getAttribute("usuario").toString());
-		List<Reserva> reservas = dao.obtenerReservas(sesionP.getAttribute("usuario").toString());
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
 		List<String> listaLugares = dao.obtenerLocalizaciones();
-		sesion.setAttribute("usuario", sesionP.getAttribute("usuario").toString());
 		modelo.addObject("numFavoritas", favoritas.size());
 		modelo.addObject("numReservas", reservasActivas.size());
 		modelo.addObject("pistas", pistasFiltro);
 		modelo.addObject("lugares",listaLugares);
-		sesionP=sesion;
+		return modelo;
+	}
+	
+	@RequestMapping(value ="/listaFavoritos",method = RequestMethod.GET)
+	public ModelAndView listaFavoritos() {
+		ModelAndView modelo=new ModelAndView("inicioUsuario");
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Pista> pistas = new ArrayList<>();
+		for(int i=0;i<favoritas.size();i++) {
+			pistas.add(dao.obtenerPistaPorId(favoritas.get(i).getIdPista()));
+		}
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+		modelo.addObject("numFavoritas", favoritas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
+		modelo.addObject("pistas", pistas);
+		return modelo;
+	}
+	
+	@RequestMapping(value ="/listaReservas",method = RequestMethod.GET)
+	public ModelAndView listaReservas() {
+		ModelAndView modelo=new ModelAndView("listaReservas");
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+		List<PistaReserva> reservasPistas = new ArrayList<>();
+		for(int i=0;i<reservasActivas.size();i++) {
+			PistaReserva pr = new PistaReserva();
+			pr.setIdPista(reservasActivas.get(i).getIdPista());
+			Pista p = dao.obtenerPistaPorId(reservasActivas.get(i).getIdPista());
+			pr.setNombre(p.getNombre());
+			pr.setLocalizacion(p.getLocalizacion());
+			pr.setImagen(p.getImagen());
+			pr.setFecha(reservasActivas.get(i).getFecha());
+			pr.setHora(reservasActivas.get(i).getHora());
+			reservasPistas.add(pr);
+		}
+		modelo.addObject("numFavoritas", favoritas.size());
+		modelo.addObject("numReservas", reservasActivas.size());
+		modelo.addObject("reservas", reservasPistas);
+		return modelo;
+	}
+	
+	@RequestMapping(value ="/eliminarReserva",method = RequestMethod.GET)
+	public ModelAndView eliminarReserva(@RequestParam("id")int idReserva) {
+		dao.eliminarReserva(idReserva);
+		return new ModelAndView("redirect:/cargarInicioUsuario");
+	}
+	
+	@RequestMapping(value ="/listaReservasAdmin",method = RequestMethod.GET)
+	public ModelAndView listaReservasUsuario() {
+		ModelAndView modelo=new ModelAndView("listaReservas");
+		List<Reserva> reservas = dao.obtenerTodasReservas();
+		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+		List<PistaReserva> reservasPistas = new ArrayList<>();
+		for(int i=0;i<reservasActivas.size();i++) {
+			PistaReserva pr = new PistaReserva();
+			pr.setIdPista(reservasActivas.get(i).getIdPista());
+			Pista p = dao.obtenerPistaPorId(reservasActivas.get(i).getIdPista());
+			pr.setNombre(p.getNombre());
+			pr.setLocalizacion(p.getLocalizacion());
+			pr.setImagen(p.getImagen());
+			pr.setFecha(reservasActivas.get(i).getFecha());
+			pr.setHora(reservasActivas.get(i).getHora());
+			pr.setUsuario(usuarioActivo);
+			reservasPistas.add(pr);
+		}
+		modelo.addObject("reservas", reservasPistas);
 		return modelo;
 	}
 }

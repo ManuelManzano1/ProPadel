@@ -64,49 +64,47 @@
 				<div class="container">
 					<!-- row -->
 					<div class="row">
-					<div class="col-md-3">
+					<div class="col-md-4">
 							<div class="header-logo">
-								<a href="cargarInicioUsuario" class="logo">
+								<a href="cargarInicioAdmin" class="logo">
 									<img src="https://i.ibb.co/P6p8kyq/309fee65-116d-474b-a0d1-466806f782a9-200x200-1.png" border="0" width="100px" height="100px">
 								</a>
 							</div>
 						</div>
-						<!-- ACCOUNT -->
-						<div class="col-md-3 clearfix" style="left:590px;">
+						<div class="col-md-4" style="left: 50px">
+							<h3>Modo administrador</h3>
+						</div>
+							<!-- ACCOUNT -->
+						<div class="col-md-4">
 							<div class="header-ctn">
 								<div>
-									<a href="listaFavoritos">
-										<i class="fas fa-heart"></i>
-										<span>Pistas favoritas</span>
-										<div class="qty">${numFavoritas}</div>
+									<a href="listaReservasAdmin">
+										<i class="fas fa-list"></i>
+										<span>Acceder al calendario de reservas</span>
 									</a>
 								</div>
-								
 								<div>
-									<a href="listaReservas">
-										<i class="fas fa-list"></i>
-										<span>Mis reservas</span>
-										<div class="qty">${numReservas}</div>
+									<a href="accederAniadirPista">
+										<i class="fas fa-plus"></i>
+										<span>Añadir nueva pista</span>
+									</a>
+								</div>
+								<div>
+									<a href="habilitarEliminarPista">
+										<i class="fas fa-trash"></i>
+										<span>Eliminar pistas<br></span>
 									</a>
 								</div>
 							</div>
 						</div>
 						<!-- /ACCOUNT -->
+						
 					</div>
 					<!-- row -->
 				</div>
 				<!-- container -->
 			</div>
 			<!-- /MAIN HEADER -->
-			<div id="top-header">
-				<div class="container">
-					<ul class="header-links pull-left">
-						<c:forEach items="${lugares}" var="l">
-						<li><a href="filtro?lugar=${l}">${l}</a></li>
-						</c:forEach>
-					</ul>
-				</div>
-			</div>
 		</header>
 		<!-- /HEADER -->
 		<div class="section">
@@ -119,15 +117,22 @@
 								<div id="tab1" class="tab-pane active">
 									<div class="products-slick" data-nav="#slick-nav-1">
 										<!-- product -->
-										<c:forEach items="${pistas}" var="p">
+										<c:forEach items="${reservas}" var="r">
 										<div class="col-md-4">
 										<div class="product">
 											<div class="product-img">
-												<img src="${p.imagen}" width="100%" height="202px">
+												<img src="${r.imagen}" width="100%" height="202px">
 											</div>
 											<div class="product-body">
-												<p class="product-category">${p.localizacion}</p>
-												<h3 class="product-name"><a href="pista?pista=${p.nombre}">${p.nombre}</a></h3>
+												<p class="product-category">${r.localizacion}</p>
+												<h3 class="product-name">${r.nombre}</h3>
+												<h3 class="product-name">${r.fecha} &nbsp;&nbsp;${r.hora}</h3>
+												<h3 class="product-name">Usuario de la reserva: ${r.usuario}</h3>
+											</div>
+											<div class="eliminarPista">
+												<br>
+												<a href="eliminarReserva?id=${r.idPista}"><b>Eliminar Reserva</b> <i class="fas fa-trash"></i></a>
+												<br>
 											</div>
 										</div>
 										</div>

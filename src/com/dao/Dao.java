@@ -142,7 +142,7 @@ public class Dao {
 			{
 				Favorita f=new Favorita();
 				f.setUsuario(rs.getString(1));
-				f.setNombrePista(rs.getString(2));
+				f.setIdPista(rs.getInt(2));
 				return f;
 			}
 			
@@ -198,7 +198,7 @@ public class Dao {
 			{
 				Favorita f = new Favorita();
 				f.setUsuario(rs.getString(1));
-				f.setNombrePista(rs.getString(2));
+				f.setIdPista(rs.getInt(2));
 				return f;
 			}
 			
@@ -328,6 +328,29 @@ public class Dao {
 				return rs.getString(1);
 				
 			}	
+		}
+		);
+	}
+
+	public int eliminarReserva(int idReserva) {
+		return template.update("delete from reserva where idReserva="+idReserva);
+		
+	}
+	
+	public List<Reserva> obtenerTodasReservas() {
+		return template.query("select * from reserva", new RowMapper<Reserva>() {
+			@Override
+			public Reserva mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Reserva r = new Reserva();
+				r.setIdReserva(rs.getInt(1));
+				r.setUsuario(rs.getString(2));
+				r.setIdPista(rs.getInt(3));
+				r.setFecha(rs.getString(4));
+				r.setHora(rs.getString(5));
+				return r;
+			}
+			
 		}
 		);
 	}

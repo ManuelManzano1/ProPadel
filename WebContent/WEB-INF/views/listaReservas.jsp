@@ -10,8 +10,13 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
- 		<!-- Google font -->
- 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+		<title>APP PROPADEL</title>
+
+		<!-- Google font -->
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
 		<!-- Bootstrap -->
 		<style><%@include file="../resources/css/bootstrap.min.css"%></style>
 
@@ -23,23 +28,30 @@
 
 		<!-- Font Awesome Icon -->
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
 		<!-- Custom stlylesheet -->
 		<style><%@include file="../resources/css/style.css"%></style>
-
+		<script type="text/javascript">
+		function deshabilitaRetroceso(){
+		    window.location.hash="no-back-button";
+		    window.location.hash="Again-No-back-button" //chrome
+		    window.onhashchange=function(){window.location.hash="no-back-button";}
+		}
+		</script>
 
     </head>
-	<body>
-			<!-- HEADER -->
+	<body onload="deshabilitaRetroceso()">
+		<!-- HEADER -->
 		<header>
 			<!-- TOP HEADER -->
 			<div id="top-header">
 				<div class="container">
 					<ul class="header-links pull-left">
-						<li><a href="#"><i class="fas fa-phone"></i> +021-95-51-84</a></li>
-						<li><a href="#"><i class="fas fa-envelope-open-text"></i> apppropadel@gmail.com</a></li>
+						<li><a href=""><i class="fas fa-phone"></i> +021-95-51-84</a></li>
+						<li><a href=""><i class="fas fa-envelope-open-text"></i> apppropadel@gmail.com</a></li>
 					</ul>
 					<ul class="header-links pull-right">
-						<li><a href="#"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
+						<li><a href="perfil?usuario=${sessionScope.usuario}"><i class="fas fa-user"></i>${sessionScope.usuario}</a></li>
 						<li><a href="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesion</a></li>
 					</ul>
 				</div>
@@ -71,7 +83,7 @@
 								</div>
 								
 								<div>
-									<a href="listaReservas">
+									<a href="#">
 										<i class="fas fa-list"></i>
 										<span>Mis reservas</span>
 										<div class="qty">${numReservas}</div>
@@ -88,98 +100,47 @@
 			<!-- /MAIN HEADER -->
 		</header>
 		<!-- /HEADER -->
-
-		
-
-		<!-- SECTION -->
 		<div class="section">
-			<!-- container -->
 			<div class="container">
-				<!-- row -->
 				<div class="row">
-					<!-- Product main img -->
-					<div class="col-md-5 col-md-push-2">
-						<div id="product-main-img">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="products-tabs">
+								<!-- tab -->
+								<div id="tab1" class="tab-pane active">
+									<div class="products-slick" data-nav="#slick-nav-1">
+										<!-- product -->
+										<c:forEach items="${reservas}" var="r">
+										<div class="col-md-4">
+										<div class="product">
+											<div class="product-img">
+												<img src="${r.imagen}" width="100%" height="202px">
+											</div>
+											<div class="product-body">
+												<p class="product-category">${r.localizacion}</p>
+												<h3 class="product-name">${r.nombre}</h3>
+												<h3 class="product-name">${r.fecha} &nbsp;&nbsp;${r.hora}</h3>
+											</div>
+											<div class="eliminarPista">
+												<br>
+												<a href="eliminarReserva?id=${r.idPista}"><b>Eliminar Reserva</b> <i class="fas fa-trash"></i></a>
+												<br>
+											</div>
+										</div>
+										</div>
+										</c:forEach>
+										<!-- /product -->
+									</div>
+									
+								</div>
+								<!-- /tab -->
 							</div>
-						</c:forEach>
 						</div>
 					</div>
-					<!-- /Product main img -->
-
-					<!-- Product thumb imgs -->
-					<div class="col-md-2  col-md-pull-5">
-						<div id="product-imgs">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
-							</div>
-						</c:forEach>
-						</div>
-					</div>
-					<!-- /Product thumb imgs -->
-
-					<!-- Product details -->
-					<div class="col-md-5">
-						<div class="product-details">
-						
-							<h2 class="product-name">${pista.nombre}</h2>
-							
-							<p>${pista.info}</p>
-							<c:if test="${hora<1}">
-							<div class="fecha">
-							<form:form method="post" action="cargarHoras">
-								<c:if test="${formato>0}">
-									<div class="wrap-input100">
-										<h3>El formato de la fecha no es el adecuado</h3>
-									</div>	
-								</c:if>
-								<c:if test="${fecha>0}">
-									<div class="wrap-input100">
-										<h3>La fecha introducida es anterior al dia de hoy</h3>
-									</div>	
-								</c:if>
-								<p>Introduce la fecha de la reserva</p>
-								<div class="form-group">
-									<form:input path="fecha" class="form-control" placeholder="dd-MM-yyyy"/>
-									<form:input path="idPista" type="hidden" value="${pista.id}"/>
-									<form:input path="usuario" type="hidden" value="${sessionScope.usuario}"/>
-								</div>
-								<div class="form-group">
-									<input type="submit" value="Establecer fecha" class="btn btn-success"/>
-								</div>
-							</form:form>
-							</div>
-							<ul class="product-btns">
-							<c:if test="${favorito==0}">
-								<li><a href="aniadirFav?pista=${pista.nombre}"> Añadir a favoritos<i class="fas fa-heart"></i></a></li>
-							</c:if>
-							<c:if test="${favorito==1}">
-								<li><a href="eliminarFav?pista=${pista.nombre}"> Eliminar de favoritos<i class="fas fa-trash-alt"></i></a></li>
-							</c:if>
-							</ul>
-						</c:if>
-						<c:if test="${hora>0}">
-							<c:forEach items="${listaHoras}" var="r">
-								<div class="hora">
-									<a href="hacerReserva?hora=${r}"><img src="https://i.ibb.co/5XDfp0N/padel1.jpg" width="150px" height="120px">${r}</a>
-								</div>
-							</c:forEach>
-						</c:if>
-							
-						</div>
-					</div>
-					<!-- /Product details -->
-							
 				</div>
-				<!-- /row -->
 			</div>
-			<!-- /container -->
 		</div>
-		<!-- /SECTION -->
-
+					<!-- Products tab & slick -->
 		<!-- jQuery Plugins -->
 		<script src="../resources/js/jquery.min.js"></script>
 		<script src="../resources/js/bootstrap.min.js"></script>
@@ -187,6 +148,5 @@
 		<script src="../resources/js/nouislider.min.js"></script>
 		<script src="../resources/js/jquery.zoom.min.js"></script>
 		<script src="../resources/js/main2.js"></script>
-
 	</body>
 </html>

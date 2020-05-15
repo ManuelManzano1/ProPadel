@@ -67,7 +67,7 @@
 					<div class="row">
 					<div class="col-md-4">
 							<div class="header-logo">
-								<a href="cargarInicio" class="logo">
+								<a href="cargarInicioAdmin" class="logo">
 									<img src="https://i.ibb.co/P6p8kyq/309fee65-116d-474b-a0d1-466806f782a9-200x200-1.png" border="0" width="100px" height="100px">
 								</a>
 							</div>
@@ -79,7 +79,7 @@
 						<div class="col-md-4">
 							<div class="header-ctn">
 								<div>
-									<a href="#">
+									<a href="listaReservasAdmin">
 										<i class="fas fa-list"></i>
 										<span>Acceder al calendario de reservas</span>
 									</a>

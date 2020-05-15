@@ -2,7 +2,7 @@ package com.modelo;
 
 public class Favorita {
 	private String usuario;
-	private String nombrePista;
+	private int idPista;
 	
 	public Favorita() {
 		
@@ -16,13 +16,15 @@ public class Favorita {
 		this.usuario = usuario;
 	}
 
-	public String getNombrePista() {
-		return nombrePista;
+	public int getIdPista() {
+		return idPista;
 	}
 
-	public void setNombrePista(String nombrePista) {
-		this.nombrePista = nombrePista;
+	public void setIdPista(int idPista) {
+		this.idPista = idPista;
 	}
+
+	
 	
 	
 }
