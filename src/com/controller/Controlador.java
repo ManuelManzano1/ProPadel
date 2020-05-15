@@ -621,7 +621,7 @@ public class Controlador {
 			pr.setImagen(p.getImagen());
 			pr.setFecha(reservasActivas.get(i).getFecha());
 			pr.setHora(reservasActivas.get(i).getHora());
-			pr.setUsuario(usuarioActivo);
+			pr.setUsuario(reservasActivas.get(i).getUsuario());
 			reservasPistas.add(pr);
 		}
 		modelo.addObject("reservas", reservasPistas);
