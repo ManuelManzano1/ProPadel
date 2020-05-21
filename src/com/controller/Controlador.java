@@ -68,7 +68,7 @@ public class Controlador {
 		List<Usuario> usuario = dao.comprobarLogin(u);
 		if(usuario.size()>0) {
 			List<Pista> pistas = dao.obtenerPistas();
-			if(usuario.get(0).getTipo().equalsIgnoreCase("A")) {
+			if(usuario.get(0).getUsuario().equalsIgnoreCase("admin")) {
 				ModelAndView modelo = new ModelAndView("inicioAdmin");
 				usuarioActivo = usuario.get(0).getUsuario();
 				sesion.setAttribute("usuario", usuarioActivo);
@@ -122,12 +122,25 @@ public class Controlador {
 	}
 	private List<Reserva> eliminarReservasAntiguas(List<Reserva> reservas) {
 		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat formato1 = new SimpleDateFormat("HH:mm");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
 		List<Reserva> reservasActivas = new ArrayList<>();
+		String fecha = formato.format(new Date());
+		String hora = formato1.format(new Date());
 		for(int i=0;i<reservas.size();i++) {
 			try {
-				if(formato.parse(reservas.get(i).getFecha()).after(new Date())) {
+				int res = formato.parse(reservas.get(i).getFecha()).compareTo(formato.parse(fecha));
+				if(res>0) {
 					reservasActivas.add(reservas.get(i));
 				}
+				else if(res==0) {
+					if(formato1.parse(reservas.get(i).getHora()).after(formato1.parse(hora))) {
+						reservasActivas.add(reservas.get(i));
+					}
+				}
+				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -585,7 +598,7 @@ public class Controlador {
 		List<PistaReserva> reservasPistas = new ArrayList<>();
 		for(int i=0;i<reservasActivas.size();i++) {
 			PistaReserva pr = new PistaReserva();
-			pr.setIdPista(reservasActivas.get(i).getIdPista());
+			pr.setIdReserva(reservasActivas.get(i).getIdReserva());
 			Pista p = dao.obtenerPistaPorId(reservasActivas.get(i).getIdPista());
 			pr.setNombre(p.getNombre());
 			pr.setLocalizacion(p.getLocalizacion());
@@ -603,7 +616,13 @@ public class Controlador {
 	@RequestMapping(value ="/eliminarReserva",method = RequestMethod.GET)
 	public ModelAndView eliminarReserva(@RequestParam("id")int idReserva) {
 		dao.eliminarReserva(idReserva);
-		return new ModelAndView("redirect:/cargarInicioUsuario");
+		if(usuarioActivo.equalsIgnoreCase("admin")) {
+			return new ModelAndView("redirect:/cargarInicioAdmin");
+		}
+		else {
+			return new ModelAndView("redirect:/cargarInicioUsuario");
+		}
+		
 	}
 	
 	@RequestMapping(value ="/listaReservasAdmin",method = RequestMethod.GET)
@@ -614,7 +633,7 @@ public class Controlador {
 		List<PistaReserva> reservasPistas = new ArrayList<>();
 		for(int i=0;i<reservasActivas.size();i++) {
 			PistaReserva pr = new PistaReserva();
-			pr.setIdPista(reservasActivas.get(i).getIdPista());
+			pr.setIdReserva(reservasActivas.get(i).getIdReserva());
 			Pista p = dao.obtenerPistaPorId(reservasActivas.get(i).getIdPista());
 			pr.setNombre(p.getNombre());
 			pr.setLocalizacion(p.getLocalizacion());

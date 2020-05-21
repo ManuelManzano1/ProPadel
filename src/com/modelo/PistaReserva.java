@@ -1,7 +1,7 @@
 package com.modelo;
 
 public class PistaReserva {
-	private int idPista;
+	private int idReserva;
 	private String nombre;
 	private String localizacion;
 	private String imagen;
@@ -11,12 +11,18 @@ public class PistaReserva {
 	public PistaReserva() {
 		super();
 	}
-	public int getIdPista() {
-		return idPista;
+	
+	
+	public int getIdReserva() {
+		return idReserva;
 	}
-	public void setIdPista(int idPista) {
-		this.idPista = idPista;
+
+
+	public void setIdReserva(int idReserva) {
+		this.idReserva = idReserva;
 	}
+
+
 	public String getNombre() {
 		return nombre;
 	}

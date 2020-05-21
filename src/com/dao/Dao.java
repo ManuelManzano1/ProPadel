@@ -42,7 +42,6 @@ public class Dao {
 				u.setEmail(rs.getString(3));
 				u.setNombre(rs.getString(4));
 				u.setApellidos(rs.getString(5));
-				u.setTipo(rs.getString(6));
 				return u;
 			}
 			
@@ -52,7 +51,7 @@ public class Dao {
 	}
 
 	public int registrarUsuario(Usuario u) {
-		return template.update("insert into user(usuario,clave,email,nombre,apellidos,tipo) values(?,?,?,?,?,'U')",u.getUsuario(),u.getClave(),u.getEmail(),u.getNombre(),u.getApellidos());
+		return template.update("insert into user(usuario,clave,email,nombre,apellidos) values(?,?,?,?,?)",u.getUsuario(),u.getClave(),u.getEmail(),u.getNombre(),u.getApellidos());
 	}
 
 	public List<Usuario> comprobarEmail(Usuario u) {
@@ -66,7 +65,6 @@ public class Dao {
 				u.setEmail(rs.getString(3));
 				u.setNombre(rs.getString(4));
 				u.setApellidos(rs.getString(5));
-				u.setTipo(rs.getString(6));
 				return u;
 			}
 			
@@ -85,7 +83,6 @@ public class Dao {
 				u.setEmail(rs.getString(3));
 				u.setNombre(rs.getString(4));
 				u.setApellidos(rs.getString(5));
-				u.setTipo(rs.getString(6));
 				return u;
 			}
 			

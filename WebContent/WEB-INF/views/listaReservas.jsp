@@ -123,7 +123,7 @@
 											</div>
 											<div class="eliminarPista">
 												<br>
-												<a href="eliminarReserva?id=${r.idPista}"><b>Eliminar Reserva</b> <i class="fas fa-trash"></i></a>
+												<a href="eliminarReserva?id=${r.idReserva}"><b>Eliminar Reserva</b> <i class="fas fa-trash"></i></a>
 												<br>
 											</div>
 										</div>

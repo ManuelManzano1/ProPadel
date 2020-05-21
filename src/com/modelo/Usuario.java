@@ -11,7 +11,6 @@ public class Usuario {
 	private String clave;
 	@NotEmpty(message="El campo no puede estar vacío")
 	private String usuario;
-	private String tipo;
 	@NotEmpty(message="El campo no puede estar vacío")
 	private String nombre;
 	@NotEmpty(message="El campo no puede estar vacío")
@@ -33,12 +32,6 @@ public class Usuario {
 	}
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
-	}
-	public String getTipo() {
-		return tipo;
-	}
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
 	}
 	public String getNombre() {
 		return nombre;
