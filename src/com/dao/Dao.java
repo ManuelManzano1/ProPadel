@@ -351,6 +351,14 @@ public class Dao {
 		}
 		);
 	}
+
+	public Reserva obtenerReserva(int idReserva) {
+		return template.queryForObject("select * from reserva where idReserva=?",new Object[] {idReserva},new BeanPropertyRowMapper<Reserva>(Reserva.class));
+	}
+
+	public Pista obtenerPista(int idPista) {
+		return template.queryForObject("select * from pista where id=?",new Object[] {idPista},new BeanPropertyRowMapper<Pista>(Pista.class));
+	}
 		
 	}
 

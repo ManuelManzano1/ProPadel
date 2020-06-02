@@ -615,8 +615,10 @@ public class Controlador {
 	
 	@RequestMapping(value ="/eliminarReserva",method = RequestMethod.GET)
 	public ModelAndView eliminarReserva(@RequestParam("id")int idReserva) {
-		dao.eliminarReserva(idReserva);
+		Reserva reserva = dao.obtenerReserva(idReserva);
+		dao.eliminarReserva(reserva.getIdReserva());
 		if(usuarioActivo.equalsIgnoreCase("admin")) {
+			enviarEmailReservaEliminada(reserva);
 			return new ModelAndView("redirect:/cargarInicioAdmin");
 		}
 		else {
@@ -625,6 +627,20 @@ public class Controlador {
 		
 	}
 	
+	private void enviarEmailReservaEliminada(Reserva reserva) {
+		Usuario u = dao.obtenerUsuario(reserva.getUsuario());
+		Pista p  = dao.obtenerPista(reserva.getIdPista());
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("apppropadel@gmail.com");
+		message.setTo(u.getEmail());
+		message.setSubject("Reserva cancelada");
+		String cuerpo="Estimado "+u.getNombre()+"\n"
+				+ "Su reserva del día "+reserva.getFecha()+" a las "+reserva.getHora()
+						+ " en la pista "+p.getNombre()+" ha sido cancelada por el administrador ";
+		message.setText(cuerpo);
+		mailSender.send(message);
+		
+	}
 	@RequestMapping(value ="/listaReservasAdmin",method = RequestMethod.GET)
 	public ModelAndView listaReservasUsuario() {
 		ModelAndView modelo=new ModelAndView("listaReservasAdmin");
