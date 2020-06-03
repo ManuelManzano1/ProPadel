@@ -15,8 +15,10 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.modelo.Favorita;
 import com.modelo.Imagen;
+import com.modelo.JugadoresTorneo;
 import com.modelo.Pista;
 import com.modelo.Reserva;
+import com.modelo.Torneo;
 import com.modelo.Usuario;
 
 
@@ -358,6 +360,90 @@ public class Dao {
 
 	public Pista obtenerPista(int idPista) {
 		return template.queryForObject("select * from pista where id=?",new Object[] {idPista},new BeanPropertyRowMapper<Pista>(Pista.class));
+	}
+
+	public List<Torneo> obtenerTorneos() {
+		return template.query("select * from torneo", new RowMapper<Torneo>() {
+			@Override
+			public Torneo mapRow(ResultSet rs, int row) throws SQLException
+			{
+				Torneo t = new Torneo();
+				t.setIdTorneo(rs.getInt(1));
+				t.setNombre(rs.getString(2));
+				t.setIdPista(rs.getInt(3));
+				t.setNumJugadores(rs.getInt(4));
+				t.setNumInscritos(rs.getInt(5));
+				t.setInfoPremios(rs.getString(6));
+				t.setFecha(rs.getString(7));
+				t.setInscripcion(rs.getInt(8));
+				return t;
+				
+			}
+			
+		}
+		);
+	}
+
+	public List<JugadoresTorneo> obtenerTorneosUsuario(String usuarioActivo) {
+		return template.query("select * from jugadoresTorneo where usuario ='"+usuarioActivo+"'", new RowMapper<JugadoresTorneo>() {
+			@Override
+			public JugadoresTorneo mapRow(ResultSet rs, int row) throws SQLException
+			{
+				JugadoresTorneo jt = new JugadoresTorneo();
+				jt.setUsuario(rs.getString(1));
+				jt.setIdTorneo(rs.getInt(2));
+				return jt;
+				
+			}
+			
+		}
+		);
+	}
+
+	public int eliminarInscripcion(int idTorneo, String usuarioActivo) {
+		return template.update("delete from jugadoresTorneo where usuario='"+usuarioActivo+"'and"
+				+ " idTorneo = "+idTorneo);
+	}
+
+	public int aniadirInscripcion(int idTorneo, String usuarioActivo) {
+		return template.update("insert into jugadoresTorneo (usuario,idTorneo) values(?,?)",usuarioActivo,idTorneo);
+	}
+
+	public Torneo obtenerTorneo(int idTorneo) {
+		return template.queryForObject("select * from torneo where idTorneo=?",new Object[] {idTorneo},new BeanPropertyRowMapper<Torneo>(Torneo.class));
+	}
+
+	public int eliminarTorneo(int idTorneo) {
+		return template.update("delete from torneo where idTorneo="+idTorneo);
+		
+	}
+
+	public List<JugadoresTorneo> obtenerParticipantes(int idTorneo) {
+		return template.query("select * from jugadoresTorneo where idTorneo ='"+idTorneo+"'", new RowMapper<JugadoresTorneo>() {
+			@Override
+			public JugadoresTorneo mapRow(ResultSet rs, int row) throws SQLException
+			{
+				JugadoresTorneo jt = new JugadoresTorneo();
+				jt.setUsuario(rs.getString(1));
+				jt.setIdTorneo(rs.getInt(2));
+				return jt;
+				
+			}
+			
+		}
+		);
+	}
+
+	public int aniadirParticipante(int idTorneo) {
+		return template.update("update torneo set numInscritos=numInscritos+1 where idTorneo=?",idTorneo);
+	}
+	public int eliminarParticipante(int idTorneo) {
+		return template.update("update torneo set numInscritos=numInscritos-1 where idTorneo=?",idTorneo);
+	}
+
+	public int eliminarParticipante(int idTorneo, String participante) {
+		return template.update("delete from jugadoresTorneo where idTorneo="+idTorneo+" and usuario='"+participante+"'");
+		
 	}
 		
 	}

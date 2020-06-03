@@ -31,9 +31,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.dao.Dao;
 import com.modelo.Favorita;
 import com.modelo.Imagen;
+import com.modelo.JugadoresTorneo;
 import com.modelo.Pista;
 import com.modelo.PistaReserva;
 import com.modelo.Reserva;
+import com.modelo.Torneo;
 import com.modelo.Usuario;
 
 
@@ -50,6 +52,7 @@ public class Controlador {
 	String usuarioActivo="";
 	Reserva res;
 	HttpSession sesion;
+	int idTorneo=0;
 	
 	/*
 	 * Model and view composición del modelo lógico de datos
@@ -332,6 +335,7 @@ public class Controlador {
 		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
 		List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
 		List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+		
 		modelo.addObject("numFavoritas", favoritas.size());
 		modelo.addObject("numReservas", reservasActivas.size());
 		modelo.addObject("pista", pista);
@@ -339,6 +343,7 @@ public class Controlador {
 		modelo.addObject("hora", 0);
 		modelo.addObject("command",new Reserva());
 		modelo.addObject("favorito", 1);
+		
 		return modelo;
 		
 	}
@@ -578,6 +583,7 @@ public class Controlador {
 		ModelAndView modelo=new ModelAndView("inicioUsuario");
 		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
 		List<Pista> pistas = new ArrayList<>();
+		
 		for(int i=0;i<favoritas.size();i++) {
 			pistas.add(dao.obtenerPistaPorId(favoritas.get(i).getIdPista()));
 		}
@@ -662,4 +668,109 @@ public class Controlador {
 		modelo.addObject("reservas", reservasPistas);
 		return modelo;
 	}
+	@RequestMapping(value ="/listaTorneos",method = RequestMethod.GET)
+	public ModelAndView listaTorneos() {
+		ModelAndView modelo=new ModelAndView("listaTorneos");
+		List<Favorita> favoritas = dao.obtenerFavoritas(usuarioActivo);
+		List<Torneo> torneos = dao.obtenerTorneos();
+		List<Torneo> torneosActuales = eliminarTorneosAntiguos(torneos);
+		if(usuarioActivo.equalsIgnoreCase("admin")) {
+			modelo.addObject("torneos", torneosActuales);
+			modelo.addObject("admin",1);
+		}
+		else {
+			List<JugadoresTorneo> listaTorneosUsuario = dao.obtenerTorneosUsuario(usuarioActivo);
+			for(int i=0;i<torneos.size();i++) {
+				Pista p = dao.obtenerPista(torneos.get(i).getIdPista());
+				torneos.get(i).setNombrePista(p.getNombre());
+				torneos.get(i).setLocalizacion(p.getLocalizacion()); 
+				for(int j=0;j<listaTorneosUsuario.size();j++) {
+					if(listaTorneosUsuario.get(j).getIdTorneo()==torneos.get(i).getIdTorneo()) {
+						torneos.get(i).setInscrito(1);
+					}
+				}
+			}
+			List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
+			List<Reserva> reservasActivas = eliminarReservasAntiguas(reservas);
+			modelo.addObject("numFavoritas", favoritas.size());
+			modelo.addObject("numReservas", reservasActivas.size());
+			modelo.addObject("torneos", torneosActuales);
+			modelo.addObject("admin",0);
+		}
+		return modelo;
+	}
+
+	private List<Torneo> eliminarTorneosAntiguos(List<Torneo> torneos) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		List<Torneo> torneosActuales = new ArrayList<>();
+		for(int i=0;i<torneos.size();i++) {
+			try {
+				if(formato.parse(torneos.get(i).getFecha()).after(new Date())) {
+					torneosActuales.add(torneos.get(i));
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return torneosActuales;
+	}
+	@RequestMapping(value ="/eliminarInscripcion",method = RequestMethod.GET)
+	public String eliminarInscripcion(@RequestParam("torneo")int idTorneo) {
+		dao.eliminarInscripcion(idTorneo,usuarioActivo);
+		dao.eliminarParticipante(idTorneo);
+		return "redirect:/cargarInicioUsuario";
+	}
+	
+	@RequestMapping(value ="/aniadirInscripcion",method = RequestMethod.GET)
+	public String aniadirInscripcion(@RequestParam("torneo")int idTorneo) {
+		dao.aniadirInscripcion(idTorneo,usuarioActivo);
+		dao.aniadirParticipante(idTorneo);
+		return "redirect:/cargarInicioUsuario";
+	}
+	
+	@RequestMapping(value ="/eliminarTorneo",method = RequestMethod.GET)
+	public ModelAndView eliminarTorneo(@RequestParam("torneo")int idTorneo) {
+		List<JugadoresTorneo> participantes = dao.obtenerParticipantes(idTorneo);
+		enviarEmailCancelacionTorneo(participantes);
+		dao.eliminarTorneo(idTorneo);
+		return new ModelAndView("redirect:/cargarInicioAdmin");
+	}
+	private void enviarEmailCancelacionTorneo(List<JugadoresTorneo> participantes) {
+		for(int i=0;i<participantes.size();i++) {
+			Usuario u = dao.obtenerUsuario(participantes.get(i).getUsuario());
+			Torneo t = dao.obtenerTorneo(participantes.get(i).getIdTorneo());
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom("apppropadel@gmail.com");
+			message.setTo(u.getEmail());
+			message.setSubject("Anulacion inscripcion");
+			String cuerpo="Su inscripción para el torneo "+t.getNombre()+" programado para la fecha "+t.getFecha()+" ha sido cancelada";
+			message.setText(cuerpo);
+			mailSender.send(message);
+			
+		}
+	}
+	@RequestMapping(value ="/accederTorneo",method = RequestMethod.GET)
+	public ModelAndView accederTorneo(@RequestParam("torneo")int idTorneod) {
+		idTorneo = idTorneod;
+		Torneo t = dao.obtenerTorneo(idTorneo);
+		List<JugadoresTorneo> participantes = dao.obtenerParticipantes(idTorneo);
+		ModelAndView modelo = new ModelAndView("torneo");
+		modelo.addObject("participantes",participantes);
+		modelo.addObject("t", t);
+		return modelo;
+	}
+	@RequestMapping(value ="/eliminarParticipante",method = RequestMethod.GET)
+	public ModelAndView accederTorneo(@RequestParam("participante")String participante) {
+		dao.eliminarParticipante(idTorneo,participante);
+		dao.eliminarParticipante(idTorneo);
+		JugadoresTorneo jt = new JugadoresTorneo();
+		jt.setUsuario(participante);
+		jt.setIdTorneo(idTorneo);
+		List<JugadoresTorneo> lista = new ArrayList<>();
+		lista.add(jt);
+		enviarEmailCancelacionTorneo(lista);
+		return new ModelAndView("redirect:/cargarInicioAdmin");
+	}
+
 }

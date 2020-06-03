@@ -107,49 +107,21 @@
 			<div class="container">
 				<!-- row -->
 				<div class="row">
-					<!-- Product main img -->
-					<div class="col-md-5 col-md-push-2">
-						<div id="product-main-img">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
-							</div>
-						</c:forEach>
-						</div>
-					</div>
-					<!-- /Product main img -->
-
-					<!-- Product thumb imgs -->
-					<div class="col-md-2  col-md-pull-5">
-						<div id="product-imgs">
-						<c:forEach items="${imagenes}" var="i">
-							<div class="product-preview">
-								<img src="${i.imagen}">
-							</div>
-						</c:forEach>
-						</div>
-					</div>
-					<!-- /Product thumb imgs -->
-
 					<!-- Product details -->
-					<div class="col-md-5">
-						<form:form method="post" action="aniadirImagen">
-							<div class="form-group">
-								<label for = "id">Id: </label>
-								<form:input path="idPista" class="form-control" readonly="true"/>
-							</div>
-							<div class="form-group">
-								<label for = "nombre">Nombre: </label>
-								<input type="text" class="form-control" value="${nombrePista}"readonly="readonly"/>
-							</div>
-							<div class="form-group">
-								<label for ="imagen">Imagen:</label>
-								<form:input path="imagen" class="form-control" />
-							</div>
-							<div class="form-group">
-								<input type="submit" value="Añadir Imagen" class="btn btn-success"/>
-							</div>
-				</form:form>
+					<div class="col-md-6" style="text-align: center;">
+						<div class="product-body">
+							<h3 style="color: #0dc133">${t.nombre}</h3>
+							<h4>${t.nombrePista}</h4>
+							<p class="product-category">${t.localizacion}</p>
+							<h4>Fecha: ${t.fecha}</h4>
+							<h4>Inscritos: ${t.numInscritos}/${t.numJugadores}</h4>
+						</div>
+					</div>
+					<div class="col-md-6" style="text-align: center;">
+						<h3 class="product-name">Lista de participantes</h3>
+						<c:forEach items="${participantes}" var="p">
+							<h4 class="product-name">${p.usuario}<a href="eliminarParticipante?participante=${p.usuario}">&nbsp;&nbsp;<i class="fas fa-trash"></i></a></h4>
+						</c:forEach>
 					</div>
 					<!-- /Product details -->
 							

@@ -645,6 +645,33 @@ textarea.input {
 	background-color: #ff0000;
 	
 }
+.infoInscripcion{
+	background-color: #0dc133;
+	margin-bottom: 5px;
+	text-align: center;
+	height: 60px;
+}
+
+.infoInscripcionNo{
+	background-color: #ff0000;
+	margin-bottom: 5px;
+	text-align: center;
+	height: 60px;
+}
+
+.inscrito{
+	color: #ff0000;
+	font-weight: bold;
+}
+.inscrito:hover{
+	color: #ff0000;
+	font-weight: bold;
+}
+.inscritoNo{
+	color: #000000;
+	font-weight: bold;
+}
+
 #navigation {
   background: #FFF;
   border-bottom: 2px solid #E4E7ED;

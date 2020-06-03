@@ -72,7 +72,7 @@
 							</div>
 						</div>
 						<!-- ACCOUNT -->
-						<div class="col-md-3 clearfix" style="left:590px;">
+						<div class="col-md-4" style="left:490px;">
 							<div class="header-ctn">
 								<div>
 									<a href="listaFavoritos">
@@ -81,12 +81,17 @@
 										<div class="qty">${numFavoritas}</div>
 									</a>
 								</div>
-								
 								<div>
-									<a href="#">
+									<a href="listaReservas">
 										<i class="fas fa-list"></i>
 										<span>Mis reservas</span>
 										<div class="qty">${numReservas}</div>
+									</a>
+								</div>
+								<div>
+									<a href="listaTorneos">
+										<i class="fas fa-trophy"></i>
+										<span>Torneos</span>
 									</a>
 								</div>
 							</div>

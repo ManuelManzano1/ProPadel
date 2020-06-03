@@ -60,7 +60,7 @@
 							</div>
 						</div>
 						<!-- ACCOUNT -->
-						<div class="col-md-3 clearfix" style="left:590px;">
+						<div class="col-md-4" style="left:490px;">
 							<div class="header-ctn">
 								<div>
 									<a href="listaFavoritos">
@@ -69,12 +69,18 @@
 										<div class="qty">${numFavoritas}</div>
 									</a>
 								</div>
-								
 								<div>
 									<a href="listaReservas">
 										<i class="fas fa-list"></i>
 										<span>Mis reservas</span>
 										<div class="qty">${numReservas}</div>
+									</a>
+								</div>
+								<div>
+									<a href="listaTorneos">
+										<i class="fas fa-trophy"></i>
+										<span>Torneos</span>
+										<div class="qty">${numTorneos}</div>
 									</a>
 								</div>
 							</div>
@@ -133,12 +139,12 @@
 							<form:form method="post" action="cargarHoras">
 								<c:if test="${formato>0}">
 									<div class="wrap-input100">
-										<h3>El formato de la fecha no es el adecuado</h3>
+										<h3 class="product-name">El formato de la fecha no es el adecuado</h3>
 									</div>	
 								</c:if>
 								<c:if test="${fecha>0}">
 									<div class="wrap-input100">
-										<h3>La fecha introducida es anterior al dia de hoy</h3>
+										<h3 class="product-name">La fecha introducida es anterior al dia de hoy</h3>
 									</div>	
 								</c:if>
 								<p>Introduce la fecha de la reserva</p>

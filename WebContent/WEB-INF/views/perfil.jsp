@@ -69,7 +69,7 @@
 							</div>
 						</div>
 						<!-- ACCOUNT -->
-						<div class="col-md-3 clearfix" style="left:590px;">
+						<div class="col-md-4" style="left:490px;">
 							<div class="header-ctn">
 								<div>
 									<a href="listaFavoritos">
@@ -78,12 +78,17 @@
 										<div class="qty">${numFavoritas}</div>
 									</a>
 								</div>
-								
 								<div>
 									<a href="listaReservas">
 										<i class="fas fa-list"></i>
 										<span>Mis reservas</span>
 										<div class="qty">${numReservas}</div>
+									</a>
+								</div>
+								<div>
+									<a href="listaTorneos">
+										<i class="fas fa-trophy"></i>
+										<span>Torneos</span>
 									</a>
 								</div>
 							</div>
@@ -165,18 +170,15 @@
 				<div class="container">
 					<!-- row -->
 					<div class="row">
-					<div class="col-md-4">
+					<div class="col-md-6">
 							<div class="header-logo">
 								<a href="cargarInicioAdmin" class="logo">
 									<img src="https://i.ibb.co/P6p8kyq/309fee65-116d-474b-a0d1-466806f782a9-200x200-1.png" border="0" width="100px" height="100px">
 								</a>
 							</div>
 						</div>
-						<div class="col-md-4" style="left: 50px">
-							<h3>Modo administrador</h3>
-						</div>
 							<!-- ACCOUNT -->
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<div class="header-ctn">
 								<div>
 									<a href="listaReservasAdmin">
@@ -193,7 +195,13 @@
 								<div>
 									<a href="habilitarEliminarPista">
 										<i class="fas fa-trash"></i>
-										<span>Eliminar pistas</span>
+										<span>Eliminar pistas<br></span>
+									</a>
+								</div>
+								<div>
+									<a href="listaTorneos">
+										<i class="fas fa-trophy"></i>
+										<span>Torneos</span>
 									</a>
 								</div>
 							</div>
