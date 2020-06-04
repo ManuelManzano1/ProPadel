@@ -734,9 +734,10 @@ public class Controlador {
 		List<JugadoresTorneo> participantes = dao.obtenerParticipantes(idTorneo);
 		enviarEmailCancelacionTorneo(participantes);
 		dao.eliminarTorneo(idTorneo);
+		dao.eliminarParticipantes(idTorneo);
 		return new ModelAndView("redirect:/cargarInicioAdmin");
 	}
-	private void enviarEmailCancelacionTorneo(List<JugadoresTorneo> participantes) {
+	private void enviarEmailCancelacionInscripcion(List<JugadoresTorneo> participantes) {
 		for(int i=0;i<participantes.size();i++) {
 			Usuario u = dao.obtenerUsuario(participantes.get(i).getUsuario());
 			Torneo t = dao.obtenerTorneo(participantes.get(i).getIdTorneo());
@@ -750,12 +751,27 @@ public class Controlador {
 			
 		}
 	}
+	private void enviarEmailCancelacionTorneo(List<JugadoresTorneo> participantes) {
+		for(int i=0;i<participantes.size();i++) {
+			Usuario u = dao.obtenerUsuario(participantes.get(i).getUsuario());
+			Torneo t = dao.obtenerTorneo(participantes.get(i).getIdTorneo());
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom("apppropadel@gmail.com");
+			message.setTo(u.getEmail());
+			message.setSubject("Anulacion inscripcion");
+			String cuerpo="El torneo "+t.getNombre()+" programado para la fecha "+t.getFecha()+" ha sido cancelado";
+			message.setText(cuerpo);
+			mailSender.send(message);
+			
+		}
+	}
 	@RequestMapping(value ="/accederTorneo",method = RequestMethod.GET)
 	public ModelAndView accederTorneo(@RequestParam("torneo")int idTorneod) {
 		idTorneo = idTorneod;
 		Torneo t = dao.obtenerTorneo(idTorneo);
 		List<JugadoresTorneo> participantes = dao.obtenerParticipantes(idTorneo);
 		ModelAndView modelo = new ModelAndView("torneo");
+		System.out.println("fdfsf:"+participantes.get(0).getUsuario()+"fdsf"+participantes.get(1).getUsuario());
 		modelo.addObject("participantes",participantes);
 		modelo.addObject("t", t);
 		return modelo;
@@ -769,8 +785,38 @@ public class Controlador {
 		jt.setIdTorneo(idTorneo);
 		List<JugadoresTorneo> lista = new ArrayList<>();
 		lista.add(jt);
-		enviarEmailCancelacionTorneo(lista);
+		enviarEmailCancelacionInscripcion(lista);
 		return new ModelAndView("redirect:/cargarInicioAdmin");
+	}
+	
+	@RequestMapping(value ="/accederAniadirTorneo",method = RequestMethod.GET)
+	public ModelAndView accederAniadirTorneo() {
+		List<Pista> pistas = dao.obtenerPistas();
+		ModelAndView modelo = new ModelAndView("aniadirTorneo");
+		modelo.addObject("pistas",pistas);
+		modelo.addObject("command",new Torneo());
+		return modelo;
+	
+	}
+	
+	@RequestMapping(value ="/aniadirTorneo",method = RequestMethod.POST)
+	public ModelAndView aniadirTorneo(@ModelAttribute("torneo")Torneo t) {
+		ModelAndView modelo = new ModelAndView("aniadirTorneo");
+		if(t.getNombre().isEmpty()||t.getIdPista()==0||t.getNumJugadores()==0||t.getInfoPremios().isEmpty()||t.getFecha().isEmpty()) {
+			modelo.addObject("vacio", 1);
+			return modelo;
+		}
+		else {
+			if(t.getFecha().substring(2, 3).equals("-")&&t.getFecha().substring(5, 6).equals("-")&&t.getFecha().length()==16) {
+				t.setNumInscritos(0);
+				dao.aniadirTorneo(t);
+				return new ModelAndView("redirect:/cargarInicioAdmin");
+			}
+			else {
+				modelo.addObject("formato", 1);
+				return modelo;
+			}
+		}
 	}
 
 }

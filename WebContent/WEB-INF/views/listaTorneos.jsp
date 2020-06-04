@@ -221,7 +221,7 @@
 											<div class="product">
 												
 													<div class="product-body">
-														<a href="aniadirTorneo">
+														<a href="accederAniadirTorneo">
 															<i class="fas fa-plus"></i>
 															<span>A&ntilde;adir torneo</span>
 														</a>
@@ -241,7 +241,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
 					<!-- Products tab & slick -->
 		<!-- jQuery Plugins -->
 		<script src="../resources/js/jquery.min.js"></script>

@@ -445,6 +445,16 @@ public class Dao {
 		return template.update("delete from jugadoresTorneo where idTorneo="+idTorneo+" and usuario='"+participante+"'");
 		
 	}
+
+	public int aniadirTorneo(Torneo t) {
+		return template.update("insert into torneo (nombre,idPista,numJugadores,numInscritos,infoPremios,fecha,inscripcion) values(?,?,?,?,?,?,?)",t.getNombre(),t.getIdPista(),t.getNumJugadores(),t.getInscripcion(),t.getInfoPremios(),t.getFecha(),t.getInscripcion());
+		
+	}
+
+	public int eliminarParticipantes(int idTorneo) {
+		return template.update("delete from jugadoresTorneo where idTorneo="+idTorneo);
+		
+	}
 		
 	}
 
