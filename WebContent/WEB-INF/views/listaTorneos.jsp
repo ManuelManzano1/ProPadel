@@ -156,6 +156,24 @@
 			</c:if>
 			<!-- /MAIN HEADER -->
 		</header>
+		<c:if test="${admin>0}">			
+			<div class="container">
+				<div class="col-md-6">
+				<br />
+					<h4 style="color:#ff0000"><i class="fas fa-exclamation"></i>&nbsp;La eliminacion de torneos puede llevar algunos minutos</h4>
+				</div>
+				<div class="col-md-6">
+					<div class="product">
+						<div class="product-body">
+							<a href="accederAniadirTorneo">
+								<i class="fas fa-plus"></i>
+								<span>A&ntilde;adir torneo</span>
+							</a>
+						</div>												
+					</div>
+				</div>
+			</div>	
+		</c:if>	
 		<!-- /HEADER -->
 		<div class="section">
 			<div class="container">
@@ -163,9 +181,6 @@
 					<div class="col-md-12">
 						<div class="row">
 							<div class="products-tabs">
-								<c:if test="${admin>0}">
-									<h4>La eliminacion de torneos puede llevar algunos minutos</h4>
-								</c:if>	
 								<!-- tab -->
 								<div id="tab1" class="tab-pane active">
 									<div class="products-slick" data-nav="#slick-nav-1">
@@ -174,17 +189,26 @@
 										<div class="col-md-4">
 										<div class="product">
 											<c:if test="${admin<1}">
-												<c:if test="${t.inscrito>0}">
-													<div class="infoInscripcionNo">
-														<br>
-														<h5><a href="eliminarInscripcion?torneo=${t.idTorneo}" class="inscritoNo">Anular inscripcion</a></h5>
-														<br>
-													</div>
+												<c:if test="${t.lleno<1}">
+													<c:if test="${t.inscrito>0}">
+														<div class="infoInscripcionNo">
+															<br>
+															<h5><a href="eliminarInscripcion?torneo=${t.idTorneo}" class="inscritoNo">Anular inscripcion</a></h5>
+															<br>
+														</div>
+													</c:if>
+													<c:if test="${t.inscrito<1}">
+														<div class="infoInscripcion">
+															<br>
+															<h5><a href="aniadirInscripcion?torneo=${t.idTorneo}" class="inscrito">Inscribirse en el torneo</a></h5>
+															<br>
+														</div>
+													</c:if>
 												</c:if>
-												<c:if test="${t.inscrito<1}">
-													<div class="infoInscripcion">
+												<c:if test="${t.lleno>0}">
+													<div class="infoLleno">
 														<br>
-														<h5><a href="aniadirInscripcion?torneo=${t.idTorneo}" class="inscrito">Inscribirse en el torneo</a></h5>
+														<h5><a href="aniadirInscripcion?torneo=${t.idTorneo}" class="inscrito">Torneo lleno</a></h5>
 														<br>
 													</div>
 												</c:if>
@@ -216,20 +240,6 @@
 										</div>
 										</div>
 										</c:forEach>
-										<c:if test="${admin>0}">
-											<div class="col-md-4">
-											<div class="product">
-												
-													<div class="product-body">
-														<a href="accederAniadirTorneo">
-															<i class="fas fa-plus"></i>
-															<span>A&ntilde;adir torneo</span>
-														</a>
-													</div>
-												
-												</div>
-											</div>
-										</c:if>
 										</div>
 										<!-- /product -->
 									</div>

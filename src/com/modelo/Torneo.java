@@ -12,6 +12,7 @@ public class Torneo {
 	private int inscrito;
 	private String fecha;
 	private int inscripcion;
+	private int lleno;
 	public int getIdTorneo() {
 		return idTorneo;
 	}
@@ -78,6 +79,12 @@ public class Torneo {
 	}
 	public void setInscripcion(int inscripcion) {
 		this.inscripcion = inscripcion;
+	}
+	public int getLleno() {
+		return lleno;
+	}
+	public void setLleno(int lleno) {
+		this.lleno = lleno;
 	}
 	
 	

@@ -80,7 +80,6 @@
 									<a href="listaTorneos">
 										<i class="fas fa-trophy"></i>
 										<span>Torneos</span>
-										<div class="qty">${numTorneos}</div>
 									</a>
 								</div>
 							</div>

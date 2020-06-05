@@ -447,7 +447,7 @@ public class Dao {
 	}
 
 	public int aniadirTorneo(Torneo t) {
-		return template.update("insert into torneo (nombre,idPista,numJugadores,numInscritos,infoPremios,fecha,inscripcion) values(?,?,?,?,?,?,?)",t.getNombre(),t.getIdPista(),t.getNumJugadores(),t.getInscripcion(),t.getInfoPremios(),t.getFecha(),t.getInscripcion());
+		return template.update("insert into torneo (nombre,idPista,numJugadores,numInscritos,infoPremios,fecha,inscripcion) values(?,?,?,?,?,?,?)",t.getNombre(),t.getIdPista(),t.getNumJugadores(),t.getNumInscritos(),t.getInfoPremios(),t.getFecha(),t.getInscripcion());
 		
 	}
 

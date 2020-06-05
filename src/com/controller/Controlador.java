@@ -683,11 +683,17 @@ public class Controlador {
 			for(int i=0;i<torneos.size();i++) {
 				Pista p = dao.obtenerPista(torneos.get(i).getIdPista());
 				torneos.get(i).setNombrePista(p.getNombre());
-				torneos.get(i).setLocalizacion(p.getLocalizacion()); 
-				for(int j=0;j<listaTorneosUsuario.size();j++) {
-					if(listaTorneosUsuario.get(j).getIdTorneo()==torneos.get(i).getIdTorneo()) {
-						torneos.get(i).setInscrito(1);
+				torneos.get(i).setLocalizacion(p.getLocalizacion());
+				if(torneos.get(i).getNumInscritos()<torneos.get(i).getNumJugadores()) {
+					for(int j=0;j<listaTorneosUsuario.size();j++) {
+						if(listaTorneosUsuario.get(j).getIdTorneo()==torneos.get(i).getIdTorneo()) {
+							torneos.get(i).setInscrito(1);
+						}
 					}
+				}
+				else {
+					torneos.get(i).setLleno(1);
+					torneos.get(i).setInscrito(-2);
 				}
 			}
 			List<Reserva> reservas = dao.obtenerReservas(usuarioActivo);
@@ -771,7 +777,6 @@ public class Controlador {
 		Torneo t = dao.obtenerTorneo(idTorneo);
 		List<JugadoresTorneo> participantes = dao.obtenerParticipantes(idTorneo);
 		ModelAndView modelo = new ModelAndView("torneo");
-		System.out.println("fdfsf:"+participantes.get(0).getUsuario()+"fdsf"+participantes.get(1).getUsuario());
 		modelo.addObject("participantes",participantes);
 		modelo.addObject("t", t);
 		return modelo;

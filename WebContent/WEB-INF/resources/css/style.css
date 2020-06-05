@@ -658,6 +658,12 @@ textarea.input {
 	text-align: center;
 	height: 60px;
 }
+.infoLleno{
+	background-color: #000000;
+	margin-bottom: 5px;
+	text-align: center;
+	height: 60px;
+}
 
 .inscrito{
 	color: #ff0000;
