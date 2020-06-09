@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
@@ -161,18 +162,30 @@ public class Controlador {
 	public ModelAndView recuperarContraseña(@ModelAttribute("us")Usuario u) {
 		List<Usuario> usuario = dao.comprobarEmail(u);
 		if(usuario.size()>0) {
+			u.setClave(generarClaveProvisional());
 			dao.modificarClave(u.getEmail(),u.getClave());
-			enviarMailRecuperarContraseña(u.getEmail());
+			enviarMailRecuperarContraseña(u);
 			return new ModelAndView("login");
 		}
 		else {
 			ModelAndView modelo = new ModelAndView("recuperarPassword");
 			modelo.addObject("existe", 1);
+			modelo.addObject("command",new Usuario());
 			return modelo;
 		}
 	
 	}
 	
+	private String generarClaveProvisional() {
+		String letras = "ABCDEGHIJLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz";
+		String pass="";
+		Random r = new Random();
+		for(int i=0;i<6;i++) {
+			String letra = Character.toString(letras.charAt(r.nextInt(49)));
+			pass = pass+letra;
+		}
+		return pass;
+	}
 	@RequestMapping(value ="/registro",method = RequestMethod.GET)
 	public String registro(Model modelo) {
 		modelo.addAttribute("user",new Usuario());
@@ -221,12 +234,12 @@ public class Controlador {
 		mailSender.send(message);
 		
 	}
-	private void enviarMailRecuperarContraseña(String email) {
+	private void enviarMailRecuperarContraseña(Usuario u) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom("apppropadel@gmail.com");
-		message.setTo(email);
+		message.setTo(u.getEmail());
 		message.setSubject("Restaurar contraseña");
-		String cuerpo="Su contraseña ha sido restaurada";
+		String cuerpo="Su contraseña provisional es:"+u.getClave()+"\nAcceda a su cuenta para modificarla";
 		message.setText(cuerpo);
 		mailSender.send(message);
 		
@@ -314,6 +327,7 @@ public class Controlador {
 			List<Pista> pistas = dao.obtenerPistas(p.getNombre());
 			if(pistas.size()<1) {
 				dao.aniadirPista(p);
+				p = dao.obtenerPista(p.getNombre());
 				dao.aniadirImagen(p);
 				return new ModelAndView("redirect:/cargarInicioAdmin");
 			}
@@ -806,18 +820,37 @@ public class Controlador {
 	
 	@RequestMapping(value ="/aniadirTorneo",method = RequestMethod.POST)
 	public ModelAndView aniadirTorneo(@ModelAttribute("torneo")Torneo t) {
+		List<Pista> pistas = dao.obtenerPistas();
 		ModelAndView modelo = new ModelAndView("aniadirTorneo");
+		SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 		if(t.getNombre().isEmpty()||t.getIdPista()==0||t.getNumJugadores()==0||t.getInfoPremios().isEmpty()||t.getFecha().isEmpty()) {
+			modelo.addObject("pistas",pistas);
+			modelo.addObject("command",new Torneo());
 			modelo.addObject("vacio", 1);
 			return modelo;
 		}
 		else {
 			if(t.getFecha().substring(2, 3).equals("-")&&t.getFecha().substring(5, 6).equals("-")&&t.getFecha().length()==16) {
-				t.setNumInscritos(0);
-				dao.aniadirTorneo(t);
-				return new ModelAndView("redirect:/cargarInicioAdmin");
+				try {
+					if(formato.parse(t.getFecha()).after(new Date())) {
+						t.setNumInscritos(0);
+						dao.aniadirTorneo(t);
+						return new ModelAndView("redirect:/cargarInicioAdmin");
+					}
+					else {
+						modelo.addObject("pistas",pistas);
+						modelo.addObject("command",new Torneo());
+						modelo.addObject("fecha", 1);
+						return modelo;
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					return null;
+				}
 			}
 			else {
+				modelo.addObject("pistas",pistas);
+				modelo.addObject("command",new Torneo());
 				modelo.addObject("formato", 1);
 				return modelo;
 			}

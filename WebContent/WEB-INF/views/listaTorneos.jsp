@@ -208,7 +208,7 @@
 												<c:if test="${t.lleno>0}">
 													<div class="infoLleno">
 														<br>
-														<h5><a href="aniadirInscripcion?torneo=${t.idTorneo}" class="inscrito">Torneo lleno</a></h5>
+														<h5 class="inscrito">Torneo lleno</h5>
 														<br>
 													</div>
 												</c:if>

@@ -34,15 +34,9 @@
 					</div>
 				</c:if>
 					<div class="wrap-input100-r">
-						<input class="input100-r" type="text" name="email" placeholder="Email">
+						<form:input path="email" class="input100-r" type="text" name="email" placeholder="Email" />
 						<span class="focus-input100"></span>
 					</div>
-
-					<div class="wrap-input100-r">
-						<input class="input100-r" type="password" name="clave" placeholder="Nueva Contraseña">
-						<span class="focus-input100"></span>
-					</div>
-
 					<div class="container-login100-form-btn m-t-32">
 						<input type="submit" class="login100-form-btn" value="Aceptar"/>
 					</div>

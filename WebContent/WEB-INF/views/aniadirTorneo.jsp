@@ -118,6 +118,9 @@
 									<c:if test="${formato>0}">
 										<h3>El formato de la fecha no es el adecuado</h3>
 									</c:if>
+									<c:if test="${fecha>0}">
+										<h3>La fecha no es actual</h3>
+									</c:if>
 								</div>
 								<label for = "nombre">Nombre: </label>
 								<form:input path="nombre" class="form-control"/>
